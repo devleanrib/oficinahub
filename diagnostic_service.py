@@ -3,8 +3,8 @@ import logging
 from typing import List
 
 from ai_client import AIClient
-from models import DiagnosticResult, DiagnosticReport, InputData
-from prompts import DIAGNOSIS_PROMPT
+from models import DiagnosticResult, DiagnosticReport, InputData, VehicleInfo
+from prompts import DIAGNOSIS_PROMPT, VEHICLE_CONTEXT_TEMPLATE
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class DiagnosticService:
 
         for code in input_data.codes:
             logger.debug("Processando codigo: %s", code)
-            result = self.diagnose_single(code)
+            result = self.diagnose_single(code, input_data.vehicle)
             results.append(result)
 
         summary = self._generate_summary(results)
@@ -29,11 +29,25 @@ class DiagnosticService:
         logger.info("Diagnostico concluido. Criticidade geral: %s", report.overall_severity)
         return report
 
-    def diagnose_single(self, code: str) -> DiagnosticResult:
-        prompt = DIAGNOSIS_PROMPT.format(code=code)
+    def diagnose_single(self, code: str, vehicle: VehicleInfo | None = None) -> DiagnosticResult:
+        vehicle_context = self._build_vehicle_context(vehicle)
+        prompt = DIAGNOSIS_PROMPT.format(code=code, vehicle_context=vehicle_context)
         response = self.ai_client.generate(prompt)
         data = self._parse_ai_response(response, code)
         return DiagnosticResult.from_dict(data, code)
+
+    def _build_vehicle_context(self, vehicle: VehicleInfo | None) -> str:
+        if not vehicle or not vehicle.has_info():
+            return ""
+        return VEHICLE_CONTEXT_TEMPLATE.format(
+            brand=vehicle.brand or "Nao informado",
+            model=vehicle.model or "Nao informado",
+            year=vehicle.year or "Nao informado",
+            engine=vehicle.engine or "Nao informado",
+            fuel=vehicle.fuel or "Nao informado",
+            transmission=vehicle.transmission or "Nao informado",
+            mileage=vehicle.mileage if vehicle.mileage is not None else "Nao informado",
+        )
 
     def _parse_ai_response(self, response: str, code: str) -> dict:
         try:
@@ -45,8 +59,8 @@ class DiagnosticService:
             raise ValueError(f"Resposta da IA nao e JSON valido para {code}") from e
 
         required_fields = [
-            "meaning", "description", "causes", "symptoms",
-            "impacts", "severity", "recommendations", "corrective_actions", "can_operate"
+            "meaning", "description", "causes", "risks",
+            "severity", "recommendations", "can_operate"
         ]
         for field in required_fields:
             if field not in data:
@@ -54,14 +68,10 @@ class DiagnosticService:
 
         if not isinstance(data["causes"], list):
             data["causes"] = [str(data["causes"])]
-        if not isinstance(data["symptoms"], list):
-            data["symptoms"] = [str(data["symptoms"])]
-        if not isinstance(data["impacts"], list):
-            data["impacts"] = [str(data["impacts"])]
+        if not isinstance(data["risks"], list):
+            data["risks"] = [str(data["risks"])]
         if not isinstance(data["recommendations"], list):
             data["recommendations"] = [str(data["recommendations"])]
-        if not isinstance(data["corrective_actions"], list):
-            data["corrective_actions"] = [str(data["corrective_actions"])]
 
         valid_severities = {"Baixa", "Media", "Alta", "Critica"}
         if data["severity"] not in valid_severities:

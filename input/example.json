@@ -1,4 +1,14 @@
 {
+  "vehicle": {
+    "brand": "Volkswagen",
+    "model": "Gol",
+    "year": "2019",
+    "engine": "1.6 MSI",
+    "fuel": "Flex",
+    "transmission": "Manual",
+    "mileage": 85000,
+    "plate": "ABC1D23"
+  },
   "codes": [
     "P0300",
     "P0171",

@@ -5,16 +5,62 @@ import re
 
 
 @dataclass
+class VehicleInfo:
+    brand: str = ""
+    model: str = ""
+    year: str = ""
+    engine: str = ""
+    fuel: str = ""
+    transmission: str = ""
+    mileage: Optional[int] = None
+    plate: str = ""
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "VehicleInfo":
+        if not data:
+            return cls()
+        return cls(
+            brand=data.get("brand", ""),
+            model=data.get("model", ""),
+            year=data.get("year", ""),
+            engine=data.get("engine", ""),
+            fuel=data.get("fuel", ""),
+            transmission=data.get("transmission", ""),
+            mileage=data.get("mileage"),
+            plate=data.get("plate", ""),
+        )
+
+    def to_context_string(self) -> str:
+        parts = []
+        if self.brand:
+            parts.append(f"Marca: {self.brand}")
+        if self.model:
+            parts.append(f"Modelo: {self.model}")
+        if self.year:
+            parts.append(f"Ano: {self.year}")
+        if self.engine:
+            parts.append(f"Motorizacao: {self.engine}")
+        if self.fuel:
+            parts.append(f"Combustivel: {self.fuel}")
+        if self.transmission:
+            parts.append(f"Transmissao: {self.transmission}")
+        if self.mileage is not None:
+            parts.append(f"Quilometragem: {self.mileage} km")
+        return "\n".join(parts) if parts else ""
+
+    def has_info(self) -> bool:
+        return any([self.brand, self.model, self.year, self.engine, self.fuel, self.transmission, self.mileage])
+
+
+@dataclass
 class DiagnosticResult:
     code: str
     meaning: str
     description: str
     causes: list[str]
-    symptoms: list[str]
-    impacts: list[str]
+    risks: list[str]
     severity: str
     recommendations: list[str]
-    corrective_actions: list[str]
     can_operate: bool
 
     def __post_init__(self):
@@ -28,11 +74,9 @@ class DiagnosticResult:
             meaning=data.get("meaning", ""),
             description=data.get("description", ""),
             causes=data.get("causes", []),
-            symptoms=data.get("symptoms", []),
-            impacts=data.get("impacts", []),
+            risks=data.get("risks", []),
             severity=data.get("severity", "Media"),
             recommendations=data.get("recommendations", []),
-            corrective_actions=data.get("corrective_actions", []),
             can_operate=data.get("can_operate", True),
         )
 
@@ -71,11 +115,12 @@ class DiagnosticReport:
 class InputData:
     codes: list[str]
     source: str
+    vehicle: VehicleInfo = field(default_factory=VehicleInfo)
 
     @classmethod
-    def from_list(cls, codes: list[str], source: str = "direct") -> "InputData":
+    def from_list(cls, codes: list[str], source: str = "direct", vehicle: VehicleInfo | None = None) -> "InputData":
         normalized = cls._normalize_codes(codes)
-        return cls(codes=normalized, source=source)
+        return cls(codes=normalized, source=source, vehicle=vehicle or VehicleInfo())
 
     @classmethod
     def from_file(cls, filepath: str) -> "InputData":
@@ -85,12 +130,15 @@ class InputData:
             with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
             codes = data.get("codes", [])
+            vehicle_data = data.get("vehicle", {})
+            vehicle = VehicleInfo.from_dict(vehicle_data) if vehicle_data else VehicleInfo()
         elif ext == "txt":
             with open(filepath, "r", encoding="utf-8") as f:
                 codes = [line.strip() for line in f if line.strip()]
+            vehicle = VehicleInfo()
         else:
             raise ValueError(f"Formato nao suportado: {ext}. Use .json ou .txt")
-        return cls.from_list(codes, ext)
+        return cls.from_list(codes, ext, vehicle)
 
     @staticmethod
     def _normalize_codes(codes: list[str]) -> list[str]:

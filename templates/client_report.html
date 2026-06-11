@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-area">
+            {% if shop_logo %}
+            <img src="{{ shop_logo }}" alt="Logo" class="shop-logo">
+            {% endif %}
+            <div class="shop-info">
+                <h1 class="shop-name">{{ shop_name }}</h1>
+                <p>{{ shop_address }}</p>
+                <p>{{ shop_phone }}</p>
+            </div>
+        </div>
+        <div class="doc-info">
+            <h2 class="doc-title">LAUDO DE DIAGNOSTICO AUTOMOTIVO</h2>
+            <p><strong>Data:</strong> {{ report_date }}</p>
+            <p><strong>Laudo N.:</strong> {{ report_id }}</p>
+        </div>
+    </div>
+</header>
+
+<section class="client-info">
+    <div class="info-grid">
+        <div class="info-block">
+            <h3>Cliente</h3>
+            <p><strong>Nome:</strong> {{ client_name }}</p>
+            <p><strong>CPF/CNPJ:</strong> {{ client_document }}</p>
+            <p><strong>Telefone:</strong> {{ client_phone }}</p>
+        </div>
+        <div class="info-block">
+            <h3>Veiculo</h3>
+            {% if has_vehicle_info %}
+            <p><strong>Marca/Modelo:</strong> {{ vehicle.brand }} {{ vehicle.model }}</p>
+            <p><strong>Ano:</strong> {{ vehicle.year }}</p>
+            {% if vehicle.plate %}
+            <p><strong>Placa:</strong> {{ vehicle.plate }}</p>
+            {% endif %}
+            {% else %}
+            <p><strong>Marca/Modelo:</strong> {{ vehicle_brand }} {{ vehicle_model }}</p>
+            <p><strong>Ano:</strong> {{ vehicle_year }}</p>
+            <p><strong>Placa:</strong> {{ vehicle_plate }}</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% if has_vehicle_info %}
+<section class="vehicle-details">
+    <h2>DADOS DO VEICULO</h2>
+    <div class="vehicle-grid">
+        {% if vehicle.brand %}
+        <div class="vehicle-item">
+            <span class="vehicle-label">Marca</span>
+            <span class="vehicle-value">{{ vehicle.brand }}</span>
+        </div>
+        {% endif %}
+        {% if vehicle.model %}
+        <div class="vehicle-item">
+            <span class="vehicle-label">Modelo</span>
+            <span class="vehicle-value">{{ vehicle.model }}</span>
+        </div>
+        {% endif %}
+        {% if vehicle.year %}
+        <div class="vehicle-item">
+            <span class="vehicle-label">Ano</span>
+            <span class="vehicle-value">{{ vehicle.year }}</span>
+        </div>
+        {% endif %}
+        {% if vehicle.engine %}
+        <div class="vehicle-item">
+            <span class="vehicle-label">Motor</span>
+            <span class="vehicle-value">{{ vehicle.engine }}</span>
+        </div>
+        {% endif %}
+        {% if vehicle.fuel %}
+        <div class="vehicle-item">
+            <span class="vehicle-label">Combustivel</span>
+            <span class="vehicle-value">{{ vehicle.fuel }}</span>
+        </div>
+        {% endif %}
+        {% if vehicle.transmission %}
+        <div class="vehicle-item">
+            <span class="vehicle-label">Transmissao</span>
+            <span class="vehicle-value">{{ vehicle.transmission }}</span>
+        </div>
+        {% endif %}
+        {% if vehicle.mileage is not none %}
+        <div class="vehicle-item">
+            <span class="vehicle-label">Quilometragem</span>
+            <span class="vehicle-value">{{ "{:,}".format(vehicle.mileage).replace(",", ".") }} km</span>
+        </div>
+        {% endif %}
+        {% if vehicle.plate %}
+        <div class="vehicle-item">
+            <span class="vehicle-label">Placa</span>
+            <span class="vehicle-value">{{ vehicle.plate }}</span>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<section class="summary">
+    <h2>Resumo Executivo</h2>
+    <div class="summary-grid">
+        <div class="summary-item">
+            <span class="summary-label">Falhas Encontradas</span>
+            <span class="summary-value">{{ report.total_codes }}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Criticidade Geral</span>
+            <span class="summary-value severity-{{ report.overall_severity|lower }}">{{ report.overall_severity }}</span>
+        </div>
+    </div>
+    <div class="summary-text">
+        <p>{{ report.summary }}</p>
+    </div>
+    {% if has_critical %}
+    <div class="alert alert-danger">
+        <strong>ALERTA:</strong> Veiculo nao deve trafegar ate correcao dos problemas criticos.
+    </div>
+    {% endif %}
+</section>
+
+<section class="diagnostics">
+    <h2>Diagnosticos</h2>
+    {% for result in report.results %}
+    <div class="diagnostic-card">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="code">{{ result.code }}</span>
+                <span class="meaning">{{ result.meaning }}</span>
+            </div>
+            <div class="card-badges">
+                <span class="badge severity-{{ result.severity|lower }}">{{ result.severity }}</span>
+                <span class="badge {% if result.can_operate %}badge-success{% else %}badge-danger{% endif %}">
+                    {{ "PODE TRAFEGAR" if result.can_operate else "NAO PODE TRAFEGAR" }}
+                </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="description">{{ result.description }}</p>
+            
+            <div class="card-section">
+                <h4>Causas Provaveis</h4>
+                <ul>
+                    {% for cause in result.causes %}
+                    <li>{{ cause }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="card-section">
+                <h4>Riscos</h4>
+                <ul>
+                    {% for risk in result.risks %}
+                    <li>{{ risk }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="card-section">
+                <h4>Recomendacoes</h4>
+                <ul>
+                    {% for rec in result.recommendations %}
+                    <li>{{ rec }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<section class="conclusion">
+    <h2>Conclusao</h2>
+    <div class="conclusion-text">
+        <p>{{ report.conclusion }}</p>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="signature-area">
+        <div class="signature-line">
+            <p>________________________________</p>
+            <p><strong>{{ mechanic_name }}</strong></p>
+            <p>{{ mechanic_credential }}</p>
+        </div>
+        <div class="signature-line">
+            <p>________________________________</p>
+            <p><strong>Assinatura do Cliente</strong></p>
+        </div>
+    </div>
+    <div class="footer-info">
+        <p>{{ shop_name }} - {{ shop_address }}</p>
+        <p>Laudo gerado automaticamente em {{ report.generated_at }}</p>
+    </div>
+</footer>
+{% endblock %}

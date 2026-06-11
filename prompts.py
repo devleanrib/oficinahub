@@ -1,67 +1,58 @@
-SYSTEM_PROMPT = """Voce e um engenheiro automotivo especialista em diagnostico de veiculos com mais de 20 anos de experiencia.
-Seu trabalho e analisar codigos de falha OBD-II e fornecer diagnosticos tecnicos precisos, completos e acionaveis.
+SYSTEM_PROMPT = """Voce e um mecanico automotivo especialista em diagnostico de veiculos.
+Seu trabalho e gerar laudos tecnicos objetivos para clientes de oficina.
 
 REGRAS OBRIGATORIAS:
 1. Responda APENAS com JSON valido, sem texto adicional
 2. Nao inclua markdown, comentarios ou explicacoes fora do JSON
 3. Todos os campos sao obrigatorios
 4. Use portugues do Brasil
-5. Seja tecnico mas claro
-6. Listas devem ter itens relevantes e acionaveis
-7. Criticidade: Baixa, Media, Alta ou Critica
-8. can_operate: true se o veiculo pode rodar com seguranca (mesmo com desempenho reduzido), false se ha risco de dano ou perigo"""
+5. Linguagem simples e profissional, sem jargao excessivo
+6. Maximo de 2 frases por campo de texto
+7. Maximo de 4 itens nas listas de causas
+8. Maximo de 3 itens nas listas de recomendacoes
+9. Criticidade: Baixa, Media, Alta ou Critica
+10. can_operate: true se o veiculo pode rodar, false se ha risco"""
 
 DIAGNOSIS_PROMPT = """Analise o codigo OBD-II: {code}
 
-Retorne APENAS um JSON com esta estrutura exata:
+{vehicle_context}
+
+Retorne APENAS um JSON com esta estrutura:
 
 {{
-  "meaning": "Significado curto do codigo (ex: Falha de combustao aleatoria detectada)",
-  "description": "Descricao tecnica detalhada do que o codigo indica, incluindo sistema afetado e parametros monitorados",
-  "causes": [
-    "Causa 1 mais provavel",
-    "Causa 2 provavel",
-    "Causa 3 possivel",
-    "Causa 4 menos comum"
-  ],
-  "symptoms": [
-    "Sintoma 1 observavel pelo motorista",
-    "Sintoma 2 observavel",
-    "Sintoma 3 possivel"
-  ],
-  "impacts": [
-    "Impacto 1 no veiculo/desempenho",
-    "Impacto 2 em emissoes/consumo",
-    "Impacto 3 risco a longo prazo"
-  ],
+  "meaning": "Nome resumido da falha em ate 10 palavras",
+  "description": "Explicacao objetiva do problema em 1-2 frases para o cliente",
+  "causes": ["Causa 1", "Causa 2", "Causa 3"],
+  "risks": ["Risco 1 ao veiculo", "Risco 2"],
   "severity": "Alta",
-  "recommendations": [
-    "Passo 1 de diagnostico (ex: Verificar scanner para freeze frame)",
-    "Passo 2 de diagnostico",
-    "Passo 3 de diagnostico"
-  ],
-  "corrective_actions": [
-    "Acao corretiva 1 (ex: Substituir sensor X)",
-    "Acao corretiva 2",
-    "Acao corretiva 3"
-  ],
+  "recommendations": ["Acao recomendada 1", "Acao recomendada 2"],
   "can_operate": true
 }}
 
-Diretrizes por categoria:
+Diretrizes:
 - P (Powertrain): Motor, transmissao, emissoes
 - C (Chassis): ABS, suspensao, direcao, freios
-- B (Body): Airbag, cintos, carroceria, conforto
-- U (Network): Comunicacao entre modulos, barramento CAN"""
+- B (Body): Airbag, cintos, carroceria
+- U (Network): Comunicacao entre modulos
+
+Seja direto e objetivo. O cliente precisa entender rapido o problema.
+Considere as informacoes do veiculo fornecidas para contextualizar o diagnostico."""
+
+VEHICLE_CONTEXT_TEMPLATE = """Informacoes do veiculo:
+Marca: {brand}
+Modelo: {model}
+Ano: {year}
+Motorizacao: {engine}
+Combustivel: {fuel}
+Transmissao: {transmission}
+Quilometragem: {mileage} km"""
 
 RESPONSE_FORMAT = """{
-  "meaning": "string",
-  "description": "string",
+  "meaning": "string (ate 10 palavras)",
+  "description": "string (1-2 frases)",
   "causes": ["string"],
-  "symptoms": ["string"],
-  "impacts": ["string"],
+  "risks": ["string"],
   "severity": "Baixa|Media|Alta|Critica",
   "recommendations": ["string"],
-  "corrective_actions": ["string"],
   "can_operate": boolean
 }"""

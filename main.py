@@ -7,7 +7,8 @@ from config import load_config, AppConfig
 from ai_client import AIClient
 from diagnostic_service import DiagnosticService
 from report_generator import ReportGenerator
-from models import InputData
+from pdf_generator import PDFGenerator
+from models import InputData, VehicleInfo
 
 
 def setup_logging(level: str = "DEBUG") -> None:
@@ -38,7 +39,12 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=str,
         default=None,
-        help="Nome do arquivo de saida (padrao: relatorio_<timestamp>.md)",
+        help="Nome do arquivo de saida (padrao: laudo_<timestamp>)",
+    )
+    parser.add_argument(
+        "--html-only",
+        action="store_true",
+        help="Gerar apenas HTML (sem PDF)",
     )
     parser.add_argument(
         "--interactive",
@@ -48,6 +54,117 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def collect_vehicle_interactive() -> VehicleInfo:
+    print("\nInforme os dados do veiculo.\n")
+
+    brand = input("Marca: ").strip()
+    model = input("Modelo: ").strip()
+    year = input("Ano: ").strip()
+    engine = input("Motorizacao: ").strip()
+    fuel = input("Combustivel: ").strip()
+    transmission = input("Transmissao: ").strip()
+
+    mileage_str = input("Quilometragem: ").strip()
+    mileage = int(mileage_str) if mileage_str.isdigit() else None
+
+    plate = input("Placa (opcional): ").strip()
+
+    return VehicleInfo(
+        brand=brand,
+        model=model,
+        year=year,
+        engine=engine,
+        fuel=fuel,
+        transmission=transmission,
+        mileage=mileage,
+        plate=plate,
+    )
+
+
+def show_vehicle_summary(vehicle: VehicleInfo) -> None:
+    print("\n" + "=" * 50)
+    print("  DADOS DO VEICULO")
+    print("=" * 50)
+    if vehicle.brand:
+        print(f"  Marca:         {vehicle.brand}")
+    if vehicle.model:
+        print(f"  Modelo:        {vehicle.model}")
+    if vehicle.year:
+        print(f"  Ano:           {vehicle.year}")
+    if vehicle.engine:
+        print(f"  Motor:         {vehicle.engine}")
+    if vehicle.fuel:
+        print(f"  Combustivel:   {vehicle.fuel}")
+    if vehicle.transmission:
+        print(f"  Transmissao:   {vehicle.transmission}")
+    if vehicle.mileage is not None:
+        print(f"  Quilometragem: {vehicle.mileage:,}".replace(",", ".") + " km")
+    if vehicle.plate:
+        print(f"  Placa:         {vehicle.plate}")
+    print("=" * 50)
+
+
+def confirm_vehicle() -> bool:
+    while True:
+        print("\nOs dados estao corretos?")
+        print("  1 - Sim")
+        print("  2 - Corrigir")
+        choice = input("\nSelecione: ").strip()
+        if choice == "1":
+            return True
+        if choice == "2":
+            return False
+        print("Opcao invalida.")
+
+
+def collect_codes_interactive() -> list[str]:
+    print("\nInforme os codigos encontrados.")
+    print("Digite separados por virgula.")
+    print("Exemplo: P0300,P0171,U0100")
+    codes_input = input("\nCodigos: ").strip()
+    if not codes_input:
+        return []
+    return [c.strip().upper() for c in codes_input.split(",")]
+
+
+def show_final_summary(vehicle: VehicleInfo, codes: list[str]) -> None:
+    print("\n" + "=" * 50)
+    print("  RESUMO DO DIAGNOSTICO")
+    print("=" * 50)
+
+    print("\n  VEICULO:")
+    vehicle_parts = []
+    if vehicle.brand:
+        vehicle_parts.append(vehicle.brand)
+    if vehicle.model:
+        vehicle_parts.append(vehicle.model)
+    if vehicle.year:
+        vehicle_parts.append(vehicle.year)
+    if vehicle_parts:
+        print(f"    {' '.join(vehicle_parts)}")
+    else:
+        print("    Nao informado")
+
+    print(f"\n  CODIGOS ({len(codes)}):")
+    for code in codes:
+        print(f"    {code}")
+
+    print("\n" + "=" * 50)
+
+
+def confirm_diagnosis() -> bool:
+    while True:
+        print("\nConfirmar geracao do diagnostico?")
+        print("  1 - Gerar")
+        print("  2 - Cancelar")
+        choice = input("\nSelecione: ").strip()
+        if choice == "1":
+            return True
+        if choice == "2":
+            return False
+        print("Opcao invalida.")
+
+
 def interactive_mode(config: AppConfig) -> None:
     print("\n" + "=" * 60)
     print("  SISTEMA DE DIAGNOSTICO AUTOMATIVO OBD-II")
@@ -55,49 +172,45 @@ def interactive_mode(config: AppConfig) -> None:
 
     ai_client = AIClient(config)
     service = DiagnosticService(ai_client)
-    reporter = ReportGenerator(config.output_dir)
+    reporter = ReportGenerator()
+    pdf_gen = PDFGenerator(output_dir=config.output_dir)
 
     while True:
-        print("\nModos de entrada:")
-        print("  1 - Digitar codigos")
-        print("  2 - Ler de arquivo")
-        print("  3 - Sair")
+        vehicle = collect_vehicle_interactive()
+        show_vehicle_summary(vehicle)
 
-        choice = input("\nSelecione uma opcao: ").strip()
+        if not confirm_vehicle():
+            continue
 
-        if choice == "3":
-            print("Saindo...")
-            break
+        codes = collect_codes_interactive()
+        if not codes:
+            print("\nNenhum codigo informado.")
+            continue
 
         try:
-            if choice == "1":
-                codes_input = input("Digite os codigos separados por virgula: ").strip()
-                if not codes_input:
-                    print("Nenhum codigo informado.")
-                    continue
-                codes = [c.strip() for c in codes_input.split(",")]
-                input_data = InputData.from_list(codes, "cli")
+            input_data = InputData.from_list(codes, "interactive", vehicle)
+        except ValueError as e:
+            print(f"\nErro de validacao: {e}")
+            continue
 
-            elif choice == "2":
-                filepath = input("Caminho do arquivo: ").strip()
-                if not os.path.exists(filepath):
-                    print(f"Arquivo nao encontrado: {filepath}")
-                    continue
-                input_data = InputData.from_file(filepath)
+        show_final_summary(vehicle, input_data.codes)
 
-            else:
-                print("Opcao invalida.")
-                continue
+        if not confirm_diagnosis():
+            continue
 
-            print(f"\nProcessando {len(input_data.codes)} codigo(s): {', '.join(input_data.codes)}")
-            print("Consultando IA... Aguarde.")
+        print(f"\nProcessando {len(input_data.codes)} codigo(s): {', '.join(input_data.codes)}")
+        print("Consultando IA... Aguarde.")
 
+        try:
             report = service.diagnose(input_data)
-            content = reporter.generate(report)
-            filepath = reporter.save(content, config.output_dir)
+            context = reporter.prepare_context(report, input_data.vehicle)
+            results = pdf_gen.generate(context)
 
-            print(f"\nRelatorio gerado com sucesso!")
-            print(f"Arquivo: {filepath}")
+            print(f"\nLaudo gerado com sucesso!")
+            if "html_path" in results:
+                print(f"HTML: {results['html_path']}")
+            if "pdf_path" in results:
+                print(f"PDF: {results['pdf_path']}")
             print(f"Criticidade geral: {report.overall_severity}")
 
         except ValueError as e:
@@ -106,13 +219,20 @@ def interactive_mode(config: AppConfig) -> None:
             print(f"\nErro inesperado: {e}")
             logging.exception("Detalhes do erro")
 
+        print("\nDeseja realizar um novo diagnostico?")
+        print("  1 - Sim")
+        print("  2 - Sair")
+        if input("\nSelecione: ").strip() != "1":
+            break
+
     print("\nObrigado por usar o Sistema de Diagnostico!")
 
 
 def cli_mode(args: argparse.Namespace, config: AppConfig) -> None:
     ai_client = AIClient(config)
     service = DiagnosticService(ai_client)
-    reporter = ReportGenerator(config.output_dir)
+    reporter = ReportGenerator()
+    pdf_gen = PDFGenerator(output_dir=config.output_dir)
 
     try:
         if args.codes:
@@ -131,11 +251,14 @@ def cli_mode(args: argparse.Namespace, config: AppConfig) -> None:
         print("Consultando IA... Aguarde.")
 
         report = service.diagnose(input_data)
-        content = reporter.generate(report)
-        filepath = reporter.save(content, args.output)
+        context = reporter.prepare_context(report, input_data.vehicle)
+        results = pdf_gen.generate(context, save_html=True, save_pdf=not args.html_only)
 
-        print(f"\nRelatorio gerado com sucesso!")
-        print(f"Arquivo: {filepath}")
+        print(f"\nLaudo gerado com sucesso!")
+        if "html_path" in results:
+            print(f"HTML: {results['html_path']}")
+        if "pdf_path" in results:
+            print(f"PDF: {results['pdf_path']}")
         print(f"Criticidade geral: {report.overall_severity}")
 
     except ValueError as e:

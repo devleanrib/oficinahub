@@ -1,0 +1,433 @@
+/* ========================================
+   LAUDO DE DIAGNOSTICO AUTOMOTIVO
+   CSS Profissional para PDF e Web
+   ======================================== */
+
+/* Reset e Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@page {
+    size: A4;
+    margin: 15mm 20mm;
+}
+
+body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.5;
+    color: #2c3e50;
+    background: #fff;
+}
+
+.page {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Header */
+.header {
+    border-bottom: 3px solid #2980b9;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.shop-logo {
+    width: 80px;
+    height: auto;
+}
+
+.shop-info h1 {
+    font-size: 16pt;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.shop-info p {
+    font-size: 9pt;
+    color: #7f8c8d;
+}
+
+.doc-info {
+    text-align: right;
+}
+
+.doc-title {
+    font-size: 14pt;
+    color: #2980b9;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.doc-info p {
+    font-size: 9pt;
+    color: #7f8c8d;
+}
+
+/* Client Info Section */
+.client-info {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.info-block h3 {
+    font-size: 10pt;
+    color: #2980b9;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.info-block p {
+    font-size: 9pt;
+    margin-bottom: 4px;
+}
+
+/* Vehicle Details Section */
+.vehicle-details {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.vehicle-details h2 {
+    font-size: 12pt;
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.vehicle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.vehicle-item {
+    text-align: center;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.vehicle-label {
+    display: block;
+    font-size: 8pt;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.vehicle-value {
+    display: block;
+    font-size: 10pt;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Summary Section */
+.summary {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.summary h2 {
+    font-size: 12pt;
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.summary-item {
+    text-align: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.summary-label {
+    display: block;
+    font-size: 9pt;
+    color: #7f8c8d;
+    margin-bottom: 5px;
+}
+
+.summary-value {
+    display: block;
+    font-size: 14pt;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.summary-text {
+    font-size: 9pt;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Alert Box */
+.alert {
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: 9pt;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+}
+
+/* Diagnostic Cards */
+.diagnostics h2 {
+    font-size: 12pt;
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.diagnostic-card {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    page-break-inside: avoid;
+}
+
+.card-header {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-title .code {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #2980b9;
+    background: #e3f2fd;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+.card-title .meaning {
+    font-size: 10pt;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.card-badges {
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    font-size: 8pt;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.severity-critica {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.severity-alta {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.severity-media {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.severity-baixa {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-body .description {
+    font-size: 9pt;
+    color: #555;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.card-section {
+    margin-bottom: 10px;
+}
+
+.card-section h4 {
+    font-size: 9pt;
+    color: #2980b9;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.card-section li {
+    font-size: 9pt;
+    color: #555;
+    padding: 3px 0;
+    padding-left: 15px;
+    position: relative;
+}
+
+.card-section li:before {
+    content: "\2022";
+    position: absolute;
+    left: 0;
+    color: #2980b9;
+}
+
+/* Conclusion Section */
+.conclusion {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.conclusion h2 {
+    font-size: 12pt;
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.conclusion-text {
+    font-size: 9pt;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Footer */
+.footer {
+    border-top: 2px solid #dee2e6;
+    padding-top: 20px;
+    margin-top: 30px;
+}
+
+.signature-area {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.signature-line {
+    text-align: center;
+    width: 45%;
+}
+
+.signature-line p {
+    font-size: 9pt;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.signature-line p:last-child {
+    font-size: 8pt;
+    color: #7f8c8d;
+}
+
+.footer-info {
+    text-align: center;
+    font-size: 8pt;
+    color: #7f8c8d;
+    border-top: 1px solid #dee2e6;
+    padding-top: 10px;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: #fff;
+    }
+    
+    .page {
+        max-width: none;
+        padding: 0;
+    }
+    
+    .diagnostic-card {
+        page-break-inside: avoid;
+    }
+    
+    .summary {
+        page-break-inside: avoid;
+    }
+}

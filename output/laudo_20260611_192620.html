@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laudo de Diagnostico Automotivo</title>
+    <style>
+    /* ========================================
+   LAUDO DE DIAGNOSTICO AUTOMOTIVO
+   CSS Profissional para PDF e Web
+   ======================================== */
+
+/* Reset e Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@page {
+    size: A4;
+    margin: 15mm 20mm;
+}
+
+body {
+    font-family: &#39;Segoe UI&#39;, &#39;Helvetica Neue&#39;, Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.5;
+    color: #2c3e50;
+    background: #fff;
+}
+
+.page {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Header */
+.header {
+    border-bottom: 3px solid #2980b9;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.shop-logo {
+    width: 80px;
+    height: auto;
+}
+
+.shop-info h1 {
+    font-size: 16pt;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.shop-info p {
+    font-size: 9pt;
+    color: #7f8c8d;
+}
+
+.doc-info {
+    text-align: right;
+}
+
+.doc-title {
+    font-size: 14pt;
+    color: #2980b9;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.doc-info p {
+    font-size: 9pt;
+    color: #7f8c8d;
+}
+
+/* Client Info Section */
+.client-info {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.info-block h3 {
+    font-size: 10pt;
+    color: #2980b9;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.info-block p {
+    font-size: 9pt;
+    margin-bottom: 4px;
+}
+
+/* Vehicle Details Section */
+.vehicle-details {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.vehicle-details h2 {
+    font-size: 12pt;
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.vehicle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.vehicle-item {
+    text-align: center;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.vehicle-label {
+    display: block;
+    font-size: 8pt;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.vehicle-value {
+    display: block;
+    font-size: 10pt;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Summary Section */
+.summary {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.summary h2 {
+    font-size: 12pt;
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.summary-item {
+    text-align: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.summary-label {
+    display: block;
+    font-size: 9pt;
+    color: #7f8c8d;
+    margin-bottom: 5px;
+}
+
+.summary-value {
+    display: block;
+    font-size: 14pt;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.summary-text {
+    font-size: 9pt;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Alert Box */
+.alert {
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: 9pt;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+}
+
+/* Diagnostic Cards */
+.diagnostics h2 {
+    font-size: 12pt;
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.diagnostic-card {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    page-break-inside: avoid;
+}
+
+.card-header {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-title .code {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #2980b9;
+    background: #e3f2fd;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+.card-title .meaning {
+    font-size: 10pt;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.card-badges {
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    font-size: 8pt;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.severity-critica {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.severity-alta {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.severity-media {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.severity-baixa {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-body .description {
+    font-size: 9pt;
+    color: #555;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.card-section {
+    margin-bottom: 10px;
+}
+
+.card-section h4 {
+    font-size: 9pt;
+    color: #2980b9;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.card-section li {
+    font-size: 9pt;
+    color: #555;
+    padding: 3px 0;
+    padding-left: 15px;
+    position: relative;
+}
+
+.card-section li:before {
+    content: &#34;\2022&#34;;
+    position: absolute;
+    left: 0;
+    color: #2980b9;
+}
+
+/* Conclusion Section */
+.conclusion {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.conclusion h2 {
+    font-size: 12pt;
+    color: #2c3e50;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.conclusion-text {
+    font-size: 9pt;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Footer */
+.footer {
+    border-top: 2px solid #dee2e6;
+    padding-top: 20px;
+    margin-top: 30px;
+}
+
+.signature-area {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.signature-line {
+    text-align: center;
+    width: 45%;
+}
+
+.signature-line p {
+    font-size: 9pt;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.signature-line p:last-child {
+    font-size: 8pt;
+    color: #7f8c8d;
+}
+
+.footer-info {
+    text-align: center;
+    font-size: 8pt;
+    color: #7f8c8d;
+    border-top: 1px solid #dee2e6;
+    padding-top: 10px;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: #fff;
+    }
+    
+    .page {
+        max-width: none;
+        padding: 0;
+    }
+    
+    .diagnostic-card {
+        page-break-inside: avoid;
+    }
+    
+    .summary {
+        page-break-inside: avoid;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="page">
+        
+<header class="header">
+    <div class="header-content">
+        <div class="logo-area">
+            
+            <div class="shop-info">
+                <h1 class="shop-name">Oficina Mecanica Premium</h1>
+                <p>Rua Principal, 123 - Centro</p>
+                <p>(11) 3456-7890</p>
+            </div>
+        </div>
+        <div class="doc-info">
+            <h2 class="doc-title">LAUDO DE DIAGNOSTICO AUTOMOTIVO</h2>
+            <p><strong>Data:</strong> 11/06/2026</p>
+            <p><strong>Laudo N.:</strong> 20260611192620</p>
+        </div>
+    </div>
+</header>
+
+<section class="client-info">
+    <div class="info-grid">
+        <div class="info-block">
+            <h3>Cliente</h3>
+            <p><strong>Nome:</strong> Cliente</p>
+            <p><strong>CPF/CNPJ:</strong> ***.***.***-**</p>
+            <p><strong>Telefone:</strong> (**) *****-****</p>
+        </div>
+        <div class="info-block">
+            <h3>Veiculo</h3>
+            <p><strong>Marca/Modelo:</strong> Marca Modelo</p>
+            <p><strong>Ano:</strong> Ano/Modelo</p>
+            <p><strong>Placa:</strong> ABC-1234</p>
+            <p><strong>Chassi:</strong> ***************</p>
+        </div>
+    </div>
+</section>
+
+
+
+<section class="summary">
+    <h2>Resumo Executivo</h2>
+    <div class="summary-grid">
+        <div class="summary-item">
+            <span class="summary-label">Falhas Encontradas</span>
+            <span class="summary-value">1</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Criticidade Geral</span>
+            <span class="summary-value severity-alta">Alta</span>
+        </div>
+    </div>
+    <div class="summary-text">
+        <p>Foram analisados 1 codigo(s) de falha OBD-II. 1 codigo(s) com criticidade alta. Veiculo pode continuar em operacao com monitoramento.</p>
+    </div>
+    
+</section>
+
+<section class="diagnostics">
+    <h2>Diagnosticos</h2>
+    
+    <div class="diagnostic-card">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="code">P0300</span>
+                <span class="meaning">Falha aleatoria de ignicao detectada</span>
+            </div>
+            <div class="card-badges">
+                <span class="badge severity-alta">Alta</span>
+                <span class="badge badge-success">
+                    PODE TRAFEGAR
+                </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="description">O modulo do motor detectou falhas de ignicao em um ou mais cilindros sem identificar qual cilindro especifico. O motor pode funcionar de forma irregular e perder potencia.</p>
+            
+            <div class="card-section">
+                <h4>Causas Provaveis</h4>
+                <ul>
+                    
+                    <li>Velas de ignicao desgastadas ou danificadas</li>
+                    
+                    <li>Cabos de vela com defeito ou degradados</li>
+                    
+                    <li>Bobina de ignicao com falha</li>
+                    
+                    <li>Problemas no sistema de alimentacao de combustivel</li>
+                    
+                </ul>
+            </div>
+
+            <div class="card-section">
+                <h4>Riscos</h4>
+                <ul>
+                    
+                    <li>Danos ao conversor catalitico por combustivel nao queimado</li>
+                    
+                    <li>Aumento significativo do consumo de combustivel</li>
+                    
+                </ul>
+            </div>
+
+            <div class="card-section">
+                <h4>Recomendacoes</h4>
+                <ul>
+                    
+                    <li>Inspecionar velas e cabos de ignicao primeiro</li>
+                    
+                    <li>Verificar bobinas de ignicao e sistema de combustivel</li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+</section>
+
+<section class="conclusion">
+    <h2>Conclusao</h2>
+    <div class="conclusion-text">
+        <p>ATENCAO REQUERIDA: 1 codigo(s) de alta criticidade (P0300). Agende diagnostico completo o mais breve possivel para evitar agravamento.</p>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="signature-area">
+        <div class="signature-line">
+            <p>________________________________</p>
+            <p><strong>Mecanico Responsavel</strong></p>
+            <p>CTPS / CFC XXXXX</p>
+        </div>
+        <div class="signature-line">
+            <p>________________________________</p>
+            <p><strong>Assinatura do Cliente</strong></p>
+        </div>
+    </div>
+    <div class="footer-info">
+        <p>Oficina Mecanica Premium - Rua Principal, 123 - Centro</p>
+        <p>Laudo gerado automaticamente em 2026-06-11 19:26:20</p>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
