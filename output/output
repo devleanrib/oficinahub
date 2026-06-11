@@ -1,0 +1,202 @@
+# Relatório de Diagnóstico Automotivo
+
+**Data/Hora de Geração:** 2026-06-11 17:06:19
+
+**Quantidade de Códigos Analisados:** 3
+
+**Criticidade Geral:** Critica
+## Resumo Executivo
+
+Foram analisados 3 codigo(s) de falha OBD-II. 1 codigo(s) com criticidade critica. 2 codigo(s) com criticidade alta. ATENCAO: Veiculo NAO deve operar - codigos: U0100
+---
+## Código P0300
+
+### Significado
+
+Falha de combustao aleatoria/multicilindro detectada
+
+### Descrição Técnica
+
+O codigo P0300 indica que o Modulo de Controle do Trem de Forca (PCM) detectou falhas de combustao (misfire) em um ou mais cilindros, sem conseguir identificar um cilindro especifico como responsavel. O sistema OBD-II monitora as variacoes de velocidade do virabrequim atraves do sensor de posicao (CKP). Quando ocorre uma falha de combustao, a velocidade do motor cai momentaneamente. O PCM considera misfire quando detecta 2% ou mais de variacao na velocidade do virabrequim em um ciclo de 200 graus. Se o misfire for suficiente para danificar o catalisador, o codigo P0300 sera armazenado junto com P0301 a P0312 (cilindro especifico) ou P0300 sozinho se afetar multiplos cilindros de forma intermitente.
+
+### Possíveis Causas
+
+- Vela de ignicao desgastada, danificada ou com folga excessiva na cabeca
+- Bobina de ignicao com falha ou conector danificado (pode afetar multiplos cilindros)
+- Injecao de combustivel irregular (bicos sujos, falha de alimentacao)
+- Baixa compressao em um ou mais cilindros (anéis, válvulas, junta do cabeçote)
+- Mistura ar-combustivel incorreta (sensor MAF sujo, sensor O2 com defeito)
+- Vazamento de ar no sistema de admissao (mangueiras rotas, junta do corpo de borboleta)
+- Problemas no sistema de ignicao (fio de vela degradado, modulo de ignicao)
+- Combustivel de baixa qualidade ou contaminado
+
+### Sintomas
+
+- Motor falhando/engasgando, especialmente em marcha lenta
+- Luz de advertência do motor (MIL) acesa ou piscando
+- Perda de potencia e aceleração irregular
+- Vibração anormal do motor em marcha lenta
+- Aumento de consumo de combustível
+- Troqueta de escape ou ruído de explosão no escape
+- Possível superaquecimento do conversor catalítico se misfire for severo
+
+### Impactos
+
+- Redução significativa da potência do motor e resposta do acelerador
+- Aumento das emissões de hidrocarbonetos (HC) e monóxido de carbono (CO), falhando na inspeção veicular
+- Risco de dano ao conversor catalítico por combustível não queimado
+- Maior consumo de combustível devido a combustão ineficiente
+- Potencial dano ao sensor de oxigênio por combustível não queimado
+- Desgaste acelerado de componentes do motor por combustão irregular
+
+### Criticidade
+
+🟠 **Alta**
+
+### Recomendações
+
+- Passo 1: Conectar scanner OBD-II e verificar freeze frame data para identificar condições do motor no momento da falha (RPM, temperatura, carga, velocidade)
+- Passo 2: Verificar se há códigos adicionais armazenados (P0301-P0312 indicam cilindro específico; P0170-P0175 indicam problema de mistura; P0200-P02FF indicam problema de injeção)
+- Passo 3: Inspecionar visualmente sistema de ignição: verificar estado das velas, bobinas, fios de vela e conectores quanto a danos, umidade ou folgas
+- Passo 4: Medir resistência das bobinas de ignição e comparar com especificações do fabricante
+- Passo 5: Realizar teste de compressão em todos os cilindros para verificar integridade da câmara de combustão
+- Passo 6: Verificar pressão e qualidade do combustível, além de funcionamento dos bicos injetores
+
+### Ações Corretivas
+
+- Substituir velas de ignição (verificar folga e tipo correto para o veículo)
+- Substituir bobina(s) de ignição com defeito identificado
+- Limpar ou substituir bicos injetores se verificação indicar obstrução
+- Reparar vazamentos no sistema de admissão (trocar mangueiras, juntas)
+- Limpar ou substituir sensor MAF se contaminado
+- Verificar e corrigir pressão da bomba de combustível
+- Substituir sensor de oxigênio se malfunctionar
+- Reparar compressão baixa (retificar cabeçote, substituir anéis ou válvulas conforme diagnóstico)
+
+### Operacionalidade
+
+✅ O veículo pode continuar em operação
+
+Monitore os sintomas e realize as recomendações o mais breve possível.
+---
+## Código P0171
+
+### Significado
+
+Sistema de combustível muito pobre - mistura ar-combustível excessivamente magra no Banco 1
+
+### Descrição Técnica
+
+O código P0171 indica que o Módulo de Controle do Powertrain (PCM) detectou uma condição de mistura excessivamente magra (lean) no Banco 1 do motor. O sensor de oxigênio upstream (O2) permanece em tensão baixa por período prolongado, indicando que há excesso de ar em relação à quantidade de combustível na mistura. O PCM tenta compensar adicionando combustível, mas os comandos de injeção atingem o limite de correção. Este código está relacionado ao sistema de injeção de combustível e ao controle de emissões, sendo um dos códigos OBD-II mais frequentes em veículos com injeção eletrônica.
+
+### Possíveis Causas
+
+- Vazamento de ar no sistema de admissão (mangueiras, juntas, corpo de borboleta, tubo de vácuo)
+- Vazamento no sistema de escape antes do sensor O2 (manifold, junta do coletor)
+- Sensor de oxigênio (O2) ou sensor de massa de ar (MAF) com defeito ou contaminado
+- Bomba de combustível com pressão insuficiente ou injetores entupidos/com vazamento
+
+### Sintomas
+
+- Luz do motor (Check Engine) acesa continuamente
+- Motor com dificuldade para pegar (partida difícil) ou funcionar em marcha lenta irregular
+- Perda de potência, engasgos ou hesitação durante aceleração
+- Consumo excessivo de combustível ou, paradoxalmente, consumo reduzido com desempenho ruim
+
+### Impactos
+
+- Redução significativa do desempenho do motor e resposta lenta ao acelerador
+- Aumento das emissões de hidrocarbonetos (HC) e óxidos de nitrogênio (NOx), podendo causar falha na inspeção de gases
+- Danos potenciais ao catalisador a longo prazo devido à mistura magra contínua e temperaturas elevadas no escape
+
+### Criticidade
+
+🟠 **Alta**
+
+### Recomendações
+
+- Verificar dados de freeze frame no scanner para identificar condições de ocorrência (temperatura, carga, RPM)
+- Inspecionar visualmente todas as mangueiras e conexões do sistema de admissão em busca de rachaduras ou desconexões
+- Realizar teste de pressão do sistema de combustível para verificar vazamentos e pressão da bomba
+- Monitorar dados do sensor O2 e MAF em tempo real com scanner para identificar comportamento anômalo
+- Verificar vazamentos no coletor de escape usando ferramenta específica ou teste de fumaça
+
+### Ações Corretivas
+
+- Substituir mangueiras, juntas ou componentes danificados encontrados na inspeção visual
+- Substituir sensor de oxigênio upstream se apresentar resposta lenta ou tensão fora da faixa
+- Limpar ou substituir sensor de massa de ar (MAF) se contaminado por óleo ou sujeira
+- Substituir bomba de combustível ou regular pressão do sistema se abaixo das especificações
+- Limpar ou substituir injetores se apresentarem vazamento interno ou obstrução
+
+### Operacionalidade
+
+✅ O veículo pode continuar em operação
+
+Monitore os sintomas e realize as recomendações o mais breve possível.
+---
+## Código U0100
+
+### Significado
+
+Perda de Comunicação com ECM/PCM
+
+### Descrição Técnica
+
+O código U0100 indica perda completa de comunicação entre um módulo de controle do veículo e o Módulo de Controle do Motor (ECM) ou Módulo de Controle do Powertrain (PCM). Este código é armazenado quando um módulo específico não recebe mensagens do ECM/PCM através do barramento CAN (Controller Area Network) por um período determinado, tipicamente superior a 5 segundos. O barramento CAN é responsável pela comunicação entre todos os módulos eletrônicos do veículo, e a falha no ECM/PCM representa uma interrupção crítica na rede de comunicação veicular.
+
+### Possíveis Causas
+
+- Falha no módulo ECM/PCM (defeito interno ou software corrompido)
+- Fusível queimado ou circuito de alimentação do ECM/PCM interrompido
+- Dano físico no barramento CAN (fios danificados, conectores corroídos ou soltos)
+- Interferência eletromagnética severa no barramento CAN
+
+### Sintomas
+
+- Motor não arranca ou desliga imediatamente após partida
+- Luz indicadora de falha (MIL/CEL) acesa no painel
+- Múltiplos códigos de falha de comunicação armazenados simultaneamente
+- Perda de comunicação com scanner OBD-II (módulos não respondem)
+- Veículo entra em modo de segurança (limp mode) com desempenho severamente reduzido
+
+### Impactos
+
+- Perda total de controle do motor: injeção de combustível, ignição e controle de emissões comprometidos
+- Veículo pode ficar completamente inoperante ou operar em modo de emergência com limitações severas
+- Falha em cascata em outros sistemas dependentes (transmissão, ABS, airbags) devido à perda de comunicação central
+
+### Criticidade
+
+🔴 **Critica**
+
+### Recomendações
+
+- Verificar freeze frame e todos os códigos armazenados para identificar se há outros módulos com falha de comunicação
+- Inspecionar visualmente todos os conectores e fiação do barramento CAN, verificando danos, corrosão e conexões soltas
+- Medir resistência do barramento CAN com multímetro (valor típico entre 60-120 ohms nos terminais OBD-II) e verificar continuidade dos fios CAN High e CAN Low
+- Verificar tensão de alimentação e terra do ECM/PCM com osciloscópio ou multímetro
+- Testar comunicação direta com ECM/PCM através de ferramenta de diagnóstico específica do fabricante
+
+### Ações Corretivas
+
+- Substituir módulo ECM/PCM se diagnosticado como defeituoso (requer reprogramação e configuração)
+- Reparar ou substituir fiação danificada do barramento CAN
+- Substituir conectores danificados ou corroídos no circuito de comunicação
+- Restaurar alimentação elétrica adequada ao módulo afetado (substituir fusíveis, reparar circuitos de energia/terra)
+- Atualizar software do módulo ECM/PCM se problema for de software corrompido
+
+### Operacionalidade
+
+🚫 O veículo NÃO deve ser operado
+
+Existe risco de dano ao veículo ou perigo a segurança. Procure assistência imediatamente.
+---
+## Conclusão
+
+ACAO IMEDIATA NECESSARIA: 1 codigo(s) critico(s) detectado(s) (U0100). O veiculo apresenta risco de dano severo ou perigo a seguranca. Procure uma oficina especializada imediatamente.
+
+---
+
+*Relatório gerado automaticamente pelo Sistema de Diagnóstico Automotivo OBD-II*
+*Data: 2026-06-11 17:06:19*
