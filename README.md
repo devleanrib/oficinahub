@@ -5,41 +5,61 @@ Sistema completo de diagnostico automotivo que recebe codigos de falha OBD-II e 
 ## Visao Geral
 
 O sistema permite:
-- Receber codigos de falha OBD-II e informacoes do veiculo via CLI interativo, argumentos ou arquivos (JSON/TXT)
+- Receber codigos de falha OBD-II e informacoes do veiculo via web, CLI interativo, argumentos ou arquivos
 - Consultar IA para gerar diagnosticos tecnicos completos com contexto do veiculo
 - Produzir laudos profissionais em HTML e PDF
 - Layout profissional para clientes de oficina
 - Validar e normalizar codigos de entrada
 - Tratar erros de API com retry automatico
+- Interface web responsiva com Bootstrap 5
+- Historico de diagnosticos persistidos
 
 ## Arquitetura
 
 ```
 gerenciador/
 │
-├── main.py                 # Ponto de entrada
+├── main.py                 # Ponto de entrada CLI
 ├── ai_client.py            # Cliente para comunicacao com IA
 ├── diagnostic_service.py   # Servico de diagnostico
 ├── report_generator.py     # Preparacao de dados do relatorio
 ├── pdf_generator.py        # Geracao de HTML e PDF
-├── models.py               # Modelos de dados
+├── models.py               # Modelos de dados (dataclasses)
 ├── prompts.py              # Prompts centralizados
 ├── config.py               # Configuracoes do sistema
 ├── requirements.txt        # Dependencias
+├── manage.py               # Django manage.py
+├── db.sqlite3              # Banco de dados SQLite
 │
-├── templates/              # Templates Jinja2
-│   ├── base.html           # Template base
-│   └── client_report.html  # Template do laudo
+├── core/                   # Configuracao Django
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
 │
-├── static/                 # Arquivos estaticos
-│   └── style.css           # CSS profissional
+├── web/                    # App Django (Interface Web)
+│   ├── models.py           # Models Django (Diagnosis, ShopSettings)
+│   ├── views.py            # Views Django
+│   ├── urls.py             # URLs da web
+│   ├── context_processors.py
+│   ├── templates/web/      # Templates Django + Bootstrap 5
+│   └── static/web/         # CSS/JS customizados
+│
+├── assets/                 # Imagens da oficina
+│   └── logo.png            # Logo automatica (png/jpg/jpeg/webp)
+│
+├── templates/              # Templates Jinja2 (PDF)
+│   ├── base.html
+│   └── client_report.html
+│
+├── static/                 # Arquivos estaticos (PDF)
+│   └── style.css
 │
 ├── input/                  # Arquivos de entrada
-│   └── example.json        # Exemplo
+│   └── example.json
 │
 └── output/                 # Laudos gerados
-    ├── laudo_*.html        # HTML gerado
-    └── laudo_*.pdf         # PDF gerado
+    ├── laudo_*.html
+    └── laudo_*.pdf
 ```
 
 ## Pre-requisitos
@@ -65,6 +85,11 @@ venv\Scripts\activate  # Windows
 3. Instale as dependencias:
 ```bash
 pip install -r requirements.txt
+```
+
+4. Execute as migrations do banco:
+```bash
+python manage.py migrate
 ```
 
 ## Configuracao
@@ -108,193 +133,101 @@ export OPENAI_API_KEY="sua-chave-aqui"
 - **Together AI**: `https://api.together.xyz/v1`
 - **Local (Ollama)**: `http://localhost:11434/v1`
 
-## Uso
+## Interface Web (Recomendada)
 
-### Modo Interativo (Recomendado)
+A interface web e a principal forma de utilizacao do sistema. Ela oferece um fluxo guiado passo a passo.
 
-O modo interativo guia o usuario passo a passo, coletando dados do veiculo antes dos codigos de falha:
+### Iniciar o Servidor
 
+```bash
+python manage.py runserver
+```
+
+Acesse no navegador: `http://127.0.0.1:8000`
+
+### Paginas Disponiveis
+
+| URL | Descricao |
+|-----|-----------|
+| `/` | Dashboard com estatisticas e acesso rapido |
+| `/analise/` | Wizard de 3 etapas para novo diagnostico |
+| `/historico/` | Lista de todos os diagnosticos realizados |
+| `/configuracoes/` | Dados da oficina e configuracoes |
+
+### Fluxo da Analise
+
+**Etapa 1 - Dados do Veiculo:**
+- Preencha marca, modelo, ano, motorizacao, combustivel
+- Campos opcionais: transmissao, quilometragem, placa
+- Clique em "Proximo"
+
+**Etapa 2 - Codigos OBD-II:**
+- Digite os codigos separados por virgula
+- Exemplo: `P0300,P0171,U0100`
+- Clique em "Analisar"
+
+**Etapa 3 - Confirmacao:**
+- Revise os dados do veiculo e codigos
+- Clique em "Confirmar e Analisar"
+- Aguarde o processamento da IA
+
+**Resultado:**
+- Resumo executivo com criticidade geral
+- Lista detalhada de cada diagnostico
+- Causas, riscos e recomendacoes por codigo
+- Botao para gerar PDF do relatorio
+
+### Configuracoes da Oficina
+
+Acesse `/configuracoes/` para configurar:
+- Nome da oficina
+- Endereco e telefone
+- Mecanico responsavel e credencial
+- Logo (detectada automaticamente de `assets/`)
+
+Essas informacoes sao utilizadas automaticamente nos relatorios PDF.
+
+## Modo CLI
+
+O sistema tambem pode ser utilizado via linha de comando:
+
+### Modo Interativo
 ```bash
 python main.py
 ```
 
-**Fluxo completo:**
-
-```
-=========================================
-  SISTEMA DE DIAGNOSTICO AUTOMATIVO OBD-II
-=========================================
-
-Informe os dados do veiculo.
-
-Marca: Volkswagen
-Modelo: Gol
-Ano: 2019
-Motorizacao: 1.6 MSI
-Combustivel: Flex
-Transmissao: Manual
-Quilometragem: 85000
-Placa (opcional): ABC1D23
-
-=========================================
-  DADOS DO VEICULO
-=========================================
-  Marca:         Volkswagen
-  Modelo:        Gol
-  Ano:           2019
-  Motor:         1.6 MSI
-  Combustivel:   Flex
-  Transmissao:   Manual
-  Quilometragem: 85.000 km
-  Placa:         ABC1D23
-=========================================
-
-Os dados estao corretos?
-  1 - Sim
-  2 - Corrigir
-
-Selecione: 1
-
-Informe os codigos encontrados.
-Digite separados por virgula.
-Exemplo: P0300,P0171,U0100
-
-Codigos: P0300,P0171,U0100
-
-=========================================
-  RESUMO DO DIAGNOSTICO
-=========================================
-
-  VEICULO:
-    Volkswagen Gol 2019
-
-  CODIGOS (3):
-    P0300
-    P0171
-    U0100
-
-=========================================
-
-Confirmar geracao do diagnostico?
-  1 - Gerar
-  2 - Cancelar
-
-Selecione: 1
-
-Processando 3 codigo(s): P0300, P0171, U0100
-Consultando IA... Aguarde.
-
-Laudo gerado com sucesso!
-HTML: output/laudo_20260611_192621.html
-PDF: output/laudo_20260611_192621.pdf
-Criticidade geral: Alta
-```
-
-**Recursos do modo interativo:**
-- Coleta guiada dos dados do veiculo (8 campos)
-- Campo placa opcional (Enter em branco para pular)
-- Opcao de corrigir dados antes de prosseguir
-- Validacao dos codigos OBD-II
-- Resumo final antes de gerar o diagnostico
-- Confirmacao antes de consultar a IA
-- Opcao de realizar novo diagnostico apos o primeiro
-
 ### Modo CLI com Codigos
-
 ```bash
 python main.py --codes "P0300,P0171,U0100"
 ```
 
 ### Modo CLI com Arquivo
-
 ```bash
 python main.py --file input/example.json
 ```
 
-### Gerar Apenas HTML (sem PDF)
-
+### Gerar Apenas HTML
 ```bash
 python main.py --codes "P0300" --html-only
 ```
 
-### Formato dos Arquivos de Entrada
+## Logo da Oficina
 
-**Arquivo JSON com dados do veiculo:**
-```json
-{
-  "vehicle": {
-    "brand": "Volkswagen",
-    "model": "Gol",
-    "year": "2019",
-    "engine": "1.6 MSI",
-    "fuel": "Flex",
-    "transmission": "Manual",
-    "mileage": 85000,
-    "plate": "ABC1D23"
-  },
-  "codes": ["P0300", "P0171", "U0100"]
-}
+O sistema detecta automaticamente a logo da oficina para inserir no cabecalho do laudo.
+
+Para adicionar sua logo, coloque um arquivo chamado `logo` na pasta `assets/`:
+
+```
+assets/
+├── logo.png      (prioridade 1)
+├── logo.jpg      (prioridade 2)
+├── logo.jpeg     (prioridade 3)
+└── logo.webp     (prioridade 4)
 ```
 
-**Arquivo JSON apenas codigos:**
-```json
-{
-  "codes": ["P0300", "P0171", "U0100"]
-}
-```
+O sistema procura os arquivos nesta ordem e utiliza o primeiro encontrado. Se nenhum arquivo existir, o relatorio e gerado normalmente sem a logo.
 
-**Arquivo TXT:**
-```
-P0300
-P0171
-U0100
-```
-
-### Campos do Veiculo
-
-| Campo | Obrigatorio | Descricao |
-|-------|-------------|-----------|
-| `brand` | Sim | Marca do veiculo |
-| `model` | Sim | Modelo do veiculo |
-| `year` | Sim | Ano do veiculo |
-| `engine` | Sim | Motorizacao (ex: 1.6 MSI) |
-| `fuel` | Sim | Tipo de combustivel |
-| `transmission` | Nao | Tipo de transmissao |
-| `mileage` | Nao | Quilometragem atual |
-| `plate` | Nao | Placa do veiculo |
-
-## Personalizacao do Laudo
-
-### Dados da Oficina
-
-Edite `main.py` ou crie um arquivo de configuracao para definir:
-
-```python
-from report_generator import ReportGenerator, ReportMetadata
-
-metadata = ReportMetadata(
-    shop_name="Minha Oficina",
-    shop_address="Rua X, 123",
-    shop_phone="(11) 3456-7890",
-    mechanic_name="Joao Mecanico",
-    mechanic_credential="CTPS 12345",
-)
-
-reporter = ReportGenerator(metadata)
-```
-
-### Templates
-
-O sistema utiliza Jinja2 para templates. Para criar um novo template:
-
-1. Crie um arquivo em `templates/`
-2. Estenda `base.html`
-3. Use o bloco `{% block content %}`
-4. Acesse os dados via `{{ variavel }}`
-
-### CSS
-
-O CSS esta em `static/style.css`. Personalize cores, fontes e espacamentos conforme a identidade visual da oficina.
+**Para trocar a logo:** basta substituir o arquivo na pasta `assets/`. Nenhuma alteracao no codigo e necessaria.
 
 ## Estrutura do Laudo
 
@@ -315,26 +248,23 @@ O laudo profissional inclui:
 - **B** (Body): Airbag, cintos, carroceria (ex: B0020)
 - **U** (Network): Comunicacao entre modulos (ex: U0100)
 
-## Informacoes do Veiculo
+## Estrutura do Codigo
 
-O sistema suporta informacoes detalhadas do veiculo para contextualizar o diagnostico:
-
-```json
-{
-  "vehicle": {
-    "brand": "Volkswagen",
-    "model": "Gol",
-    "year": "2019",
-    "engine": "1.6 MSI",
-    "fuel": "Flex",
-    "transmission": "Manual",
-    "mileage": 85000,
-    "plate": "ABC1D23"
-  }
-}
-```
-
-Essas informacoes sao utilizadas pela IA para gerar diagnosticos mais contextualizados e aparecem na secao "DADOS DO VEICULO" do laudo.
+| Arquivo | Responsabilidade |
+|---------|------------------|
+| `config.py` | Configuracoes do sistema |
+| `models.py` | Modelos de dados (dataclasses) |
+| `prompts.py` | Prompts da IA |
+| `ai_client.py` | Comunicacao com IA |
+| `diagnostic_service.py` | Orquestracao do diagnostico |
+| `report_generator.py` | Preparacao de dados |
+| `pdf_generator.py` | Geracao de HTML e PDF |
+| `core/settings.py` | Configuracoes Django |
+| `web/models.py` | Models Django (Diagnosis, ShopSettings) |
+| `web/views.py` | Views Django (dashboard, analise, resultado, historico, configuracoes) |
+| `web/urls.py` | Roteamento URL |
+| `web/templates/` | Templates Django + Bootstrap 5 |
+| `main.py` | Interface CLI |
 
 ## Tratamento de Erros
 
@@ -343,36 +273,6 @@ Essas informacoes sao utilizadas pela IA para gerar diagnosticos mais contextual
 - **Autenticacao**: Mensagem clara sobre API Key
 - **Codigos invalidos**: Validacao de formato
 - **Respostas malformadas**: Validacao de JSON
-
-## Estrutura do Codigo
-
-| Arquivo | Responsabilidade |
-|---------|------------------|
-| `config.py` | Configuracoes do sistema |
-| `models.py` | Modelos de dados (VehicleInfo, DiagnosticResult, DiagnosticReport, InputData) |
-| `prompts.py` | Prompts da IA |
-| `ai_client.py` | Comunicacao com IA |
-| `diagnostic_service.py` | Orquestracao do diagnostico |
-| `report_generator.py` | Preparacao de dados |
-| `pdf_generator.py` | Geracao de HTML e PDF |
-| `templates/` | Templates Jinja2 |
-| `static/` | CSS e estaticos |
-| `main.py` | Interface do usuario |
-
-## Preparacao para Evolucao
-
-A arquitetura permite futuramente:
-- Templates diferentes (Cliente, Tecnico, Premium)
-- Insercao de fotos
-- QR Code
-- Checklist
-- Orcamento
-- Historico do veiculo
-- Personalizacao com identidade visual
-- Multiplos temas
-- Portal do cliente
-- Envio por e-mail
-- Dados do veiculo mais detalhados (versao do motor, potencia, etc.)
 
 ## Licenca
 

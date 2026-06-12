@@ -1,0 +1,72 @@
+{% extends "web/base.html" %}
+{% block title %}Configuracoes - Diagnostico OBD-II{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-gear"></i> Configuracoes</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-building"></i> Dados da Oficina</div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nome da Oficina</label>
+                            <input type="text" class="form-control" name="name" value="{{ shop.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Telefone</label>
+                            <input type="text" class="form-control" name="phone" value="{{ shop.phone }}">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Endereco</label>
+                            <input type="text" class="form-control" name="address" value="{{ shop.address }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">E-mail</label>
+                            <input type="email" class="form-control" name="email" value="{{ shop.email }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mecanico Responsavel</label>
+                            <input type="text" class="form-control" name="mechanic_name" value="{{ shop.mechanic_name }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Credencial (CTPS/CFC)</label>
+                            <input type="text" class="form-control" name="mechanic_credential" value="{{ shop.mechanic_credential }}">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Salvar Configuracoes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-image"></i> Logo da Oficina</div>
+            <div class="card-body">
+                {% if shop_logo_path %}
+                <div class="d-flex align-items-center gap-3">
+                    <img src="file://{{ shop_logo_path }}" alt="Logo" style="max-height:80px; max-width:200px; border-radius:8px; border:1px solid #dee2e6;">
+                    <div>
+                        <p class="mb-1 fw-bold text-success"><i class="bi bi-check-circle"></i> Logo detectada automaticamente</p>
+                        <small class="text-muted">{{ shop_logo_path }}</small>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-light border mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Nenhuma logo encontrada. Coloque um arquivo chamado <code>logo.png</code> (ou .jpg/.jpeg/.webp) na pasta <code>assets/</code>.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

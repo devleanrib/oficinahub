@@ -1,0 +1,172 @@
+{% extends "web/base.html" %}
+{% block title %}Nova Analise - Diagnostico OBD-II{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-search"></i> Nova Analise</h1>
+</div>
+
+<div class="step-indicator">
+    <div class="step {% if step == '1' %}active{% elif step == '2' or step == '3' %}done{% else %}pending{% endif %}">1</div>
+    <div class="step-line {% if step == '2' or step == '3' %}done{% else %}pending{% endif %}"></div>
+    <div class="step {% if step == '2' %}active{% elif step == '3' %}done{% else %}pending{% endif %}">2</div>
+    <div class="step-line {% if step == '3' %}done{% else %}pending{% endif %}"></div>
+    <div class="step {% if step == '3' %}active{% else %}pending{% endif %}">3</div>
+</div>
+
+{% if step == "1" %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-car-front"></i> Etapa 1: Dados do Veiculo</div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="step" value="1">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Marca</label>
+                            <input type="text" class="form-control" name="brand" placeholder="Ex: Volkswagen" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Modelo</label>
+                            <input type="text" class="form-control" name="model" placeholder="Ex: Gol" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ano</label>
+                            <input type="text" class="form-control" name="year" placeholder="Ex: 2019" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Motorizacao</label>
+                            <input type="text" class="form-control" name="engine" placeholder="Ex: 1.6 MSI" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Combustivel</label>
+                            <select class="form-select" name="fuel" required>
+                                <option value="">Selecione</option>
+                                <option value="Flex">Flex</option>
+                                <option value="Gasolina">Gasolina</option>
+                                <option value="Alcool">Alcool</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Eletrico">Eletrico</option>
+                                <option value="Hibrido">Hibrido</option>
+                                <option value="GNV">GNV</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Transmissao</label>
+                            <select class="form-select" name="transmission">
+                                <option value="">Selecione</option>
+                                <option value="Manual">Manual</option>
+                                <option value="Automatica">Automatica</option>
+                                <option value="CVT">CVT</option>
+                                <option value="Automatizada">Automatizada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Quilometragem</label>
+                            <input type="number" class="form-control" name="mileage" placeholder="Ex: 85000">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Placa</label>
+                            <input type="text" class="form-control" name="plate" placeholder="ABC1D23" maxlength="8">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Proximo <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif step == "2" %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-tag"></i> Etapa 2: Codigos OBD-II</div>
+            <div class="card-body">
+                {% if vehicle %}
+                <div class="alert alert-light border mb-4">
+                    <strong><i class="bi bi-car-front"></i> Veiculo:</strong>
+                    {{ vehicle.brand }} {{ vehicle.model }} - {{ vehicle.year }} ({{ vehicle.engine }})
+                </div>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="step" value="2">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Codigos de Falha</label>
+                        <input type="text" class="form-control form-control-lg" name="codes"
+                               placeholder="P0300,P0171,U0100" required
+                               pattern="^[PCBU]\d{4}(,[PCBU]\d{4})*$"
+                               title="Formato: P0300,P0171,U0100">
+                        <div class="form-text">Separados por virgula. Exemplo: P0300,P0171,U0100</div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'nova_analise' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="btnAnalisar">
+                            <i class="bi bi-lightning"></i> Analisar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif step == "3" %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-check-circle"></i> Etapa 3: Confirmar Analise</div>
+            <div class="card-body">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted"><i class="bi bi-car-front"></i> Veiculo</h6>
+                        <p class="fw-bold mb-0">{{ vehicle.brand }} {{ vehicle.model }}</p>
+                        <p class="text-muted mb-0">{{ vehicle.year }} - {{ vehicle.engine }}</p>
+                        {% if vehicle.plate %}<p class="text-muted mb-0">Placa: {{ vehicle.plate }}</p>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted"><i class="bi bi-tag"></i> Codigos ({{ codes|length }})</h6>
+                        {% for code in codes %}
+                        <span class="badge bg-dark me-1 mb-1">{{ code }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <form method="post" data-loading>
+                    {% csrf_token %}
+                    <input type="hidden" name="step" value="3">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'nova_analise' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-lightning"></i> Confirmar e Analisar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('btnAnalisar')?.addEventListener('click', function() {
+    var input = document.querySelector('input[name="codes"]');
+    if (input && input.value) {
+        var codes = input.value.split(',').filter(c => c.trim());
+        document.getElementById('loadingMsg').textContent = 'Analisando ' + codes.length + ' codigo(s)...';
+    }
+});
+</script>
+{% endblock %}

@@ -1,4 +1,11 @@
-/* ========================================
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laudo de Diagnostico Automotivo</title>
+    <style>
+    /* ========================================
    LAUDO DE DIAGNOSTICO AUTOMOTIVO
    CSS Profissional para PDF e Web
    ======================================== */
@@ -16,7 +23,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-family: &#39;Segoe UI&#39;, &#39;Helvetica Neue&#39;, Arial, sans-serif;
     font-size: 10pt;
     line-height: 1.5;
     color: #2c3e50;
@@ -347,7 +354,7 @@ body {
 }
 
 .card-section li:before {
-    content: "\2022";
+    content: &#34;\2022&#34;;
     position: absolute;
     left: 0;
     color: #b91c1c;
@@ -432,3 +439,204 @@ body {
         page-break-inside: avoid;
     }
 }
+    </style>
+</head>
+<body>
+    <div class="page">
+        
+<header class="header">
+    <div class="header-content">
+        <div class="logo-area">
+            
+            <img src="/home/leandro/projetos/gerenciador/assets/logo.png" alt="Logo" class="shop-logo">
+            
+            <div class="shop-info">
+                <h1 class="shop-name">Minha Oficina</h1>
+                <p>Rua Teste</p>
+                <p>123</p>
+            </div>
+        </div>
+        <div class="doc-info">
+            <h2 class="doc-title">LAUDO DE DIAGNOSTICO AUTOMOTIVO</h2>
+            <p><strong>Data:</strong> 12/06/2026</p>
+            <p><strong>Laudo N.:</strong> 20260612141531</p>
+        </div>
+    </div>
+</header>
+
+<section class="client-info">
+    <div class="info-grid">
+        <div class="info-block">
+            <h3>Cliente</h3>
+            <p><strong>Nome:</strong> Cliente</p>
+            <p><strong>CPF/CNPJ:</strong> ***.***.***-**</p>
+            <p><strong>Telefone:</strong> (**) *****-****</p>
+        </div>
+        <div class="info-block">
+            <h3>Veiculo</h3>
+            
+            <p><strong>Marca/Modelo:</strong> Chevrolet Onix</p>
+            <p><strong>Ano:</strong> 2105</p>
+            
+            
+        </div>
+    </div>
+</section>
+
+
+<section class="vehicle-details">
+    <h2>DADOS DO VEICULO</h2>
+    <div class="vehicle-grid">
+        
+        <div class="vehicle-item">
+            <span class="vehicle-label">Marca</span>
+            <span class="vehicle-value">Chevrolet</span>
+        </div>
+        
+        
+        <div class="vehicle-item">
+            <span class="vehicle-label">Modelo</span>
+            <span class="vehicle-value">Onix</span>
+        </div>
+        
+        
+        <div class="vehicle-item">
+            <span class="vehicle-label">Ano</span>
+            <span class="vehicle-value">2105</span>
+        </div>
+        
+        
+        <div class="vehicle-item">
+            <span class="vehicle-label">Motor</span>
+            <span class="vehicle-value">1.0</span>
+        </div>
+        
+        
+        <div class="vehicle-item">
+            <span class="vehicle-label">Combustivel</span>
+            <span class="vehicle-value">Flex</span>
+        </div>
+        
+        
+        <div class="vehicle-item">
+            <span class="vehicle-label">Transmissao</span>
+            <span class="vehicle-value">Manual</span>
+        </div>
+        
+        
+        <div class="vehicle-item">
+            <span class="vehicle-label">Quilometragem</span>
+            <span class="vehicle-value">10.000 km</span>
+        </div>
+        
+        
+    </div>
+</section>
+
+
+<section class="summary">
+    <h2>Resumo Executivo</h2>
+    <div class="summary-grid">
+        <div class="summary-item">
+            <span class="summary-label">Falhas Encontradas</span>
+            <span class="summary-value">1</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Criticidade Geral</span>
+            <span class="summary-value severity-alta">Alta</span>
+        </div>
+    </div>
+    <div class="summary-text">
+        <p>Foram analisados 1 codigo(s) de falha OBD-II. 1 codigo(s) com criticidade alta. Veiculo pode continuar em operacao com monitoramento.</p>
+    </div>
+    
+</section>
+
+<section class="diagnostics">
+    <h2>Diagnosticos</h2>
+    
+    <div class="diagnostic-card">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="code">P0300</span>
+                <span class="meaning">Falha de ignição aleatória em múltiplos cilindros</span>
+            </div>
+            <div class="card-badges">
+                <span class="badge severity-alta">Alta</span>
+                <span class="badge badge-success">
+                    PODE TRAFEGAR
+                </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="description">O sistema detectou falhas de ignição em um ou mais cilindros do motor. Isso pode causar perda de potência, aumento de consumo e danos ao catalisador se não for corrigido.</p>
+            
+            <div class="card-section">
+                <h4>Causas Provaveis</h4>
+                <ul>
+                    
+                    <li>Velas de ignição desgastadas ou com mau contato</li>
+                    
+                    <li>Cabos de vela danificados ou deteriorados</li>
+                    
+                    <li>Bobina de ignição com defeito</li>
+                    
+                    <li>Problemas no sistema de alimentação de combustível</li>
+                    
+                </ul>
+            </div>
+
+            <div class="card-section">
+                <h4>Riscos</h4>
+                <ul>
+                    
+                    <li>Danos ao conversor catalítico por combustível não queimado</li>
+                    
+                    <li>Parada do veículo durante o uso</li>
+                    
+                </ul>
+            </div>
+
+            <div class="card-section">
+                <h4>Recomendacoes</h4>
+                <ul>
+                    
+                    <li>Verificar velas, cabos e bobinas de ignição</li>
+                    
+                    <li>Diagnosticar sistema de combustível e sensores relacionados</li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+</section>
+
+<section class="conclusion">
+    <h2>Conclusao</h2>
+    <div class="conclusion-text">
+        <p>ATENCAO REQUERIDA: 1 codigo(s) de alta criticidade (P0300). Agende diagnostico completo o mais breve possivel para evitar agravamento.</p>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="signature-area">
+        <div class="signature-line">
+            <p>________________________________</p>
+            <p><strong>Joao</strong></p>
+            <p>CTPS 123</p>
+        </div>
+        <div class="signature-line">
+            <p>________________________________</p>
+            <p><strong>Assinatura do Cliente</strong></p>
+        </div>
+    </div>
+    <div class="footer-info">
+        <p>Minha Oficina - Rua Teste</p>
+        <p>Laudo gerado automaticamente em 2026-06-12 14:15:31</p>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

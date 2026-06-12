@@ -1,5 +1,6 @@
 import os
 import logging
+from pathlib import Path
 from datetime import datetime
 from dataclasses import dataclass, field
 
@@ -9,14 +10,18 @@ from models import DiagnosticReport, VehicleInfo
 
 logger = logging.getLogger(__name__)
 
+PROJECT_ROOT = Path(__file__).parent
+ASSETS_DIR = PROJECT_ROOT / "assets"
+LOGO_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp"]
+
 
 @dataclass
 class ReportContext:
     report: DiagnosticReport
     vehicle: VehicleInfo = field(default_factory=VehicleInfo)
-    shop_name: str = "Oficina Mecanica Premium"
-    shop_address: str = "Rua Principal, 123 - Centro"
-    shop_phone: str = "(11) 3456-7890"
+    shop_name: str = "Oficina Mecanica Original"
+    shop_address: str = "Rua Santa Helena, 12 - Bairro da Paz"
+    shop_phone: str = "(92) 99389-8610"
     shop_logo: str | None = None
     client_name: str = "Cliente"
     client_document: str = "***.***.***-**"
@@ -77,6 +82,20 @@ class PDFGenerator:
         )
         logger.debug("PDFGenerator inicializado. Templates: %s | Static: %s", templates_dir, static_dir)
 
+    @staticmethod
+    def get_logo_path(assets_dir: Path | str | None = None) -> str | None:
+        directory = Path(assets_dir) if assets_dir else ASSETS_DIR
+        for ext in LOGO_EXTENSIONS:
+            path = directory / f"logo{ext}"
+            if path.is_file():
+                resolved = str(path.resolve())
+                logger.info("Logo encontrada: %s", resolved)
+                if os.name == "nt":
+                    return "file:///" + resolved.replace("\\", "/")
+                return "file://" + resolved
+        logger.debug("Nenhuma logo encontrada em %s", directory)
+        return None
+
     def generate_html(self, context: ReportContext, template_name: str = "client_report.html") -> str:
         template = self.env.get_template(template_name)
         css_path = os.path.abspath(os.path.join(self.static_dir, "style.css"))
@@ -85,6 +104,9 @@ class PDFGenerator:
         if os.path.exists(css_path):
             with open(css_path, "r", encoding="utf-8") as f:
                 css_content = f.read()
+
+        if not context.shop_logo:
+            context.shop_logo = self.get_logo_path()
         
         html_content = template.render(css_path=css_path, css_content=css_content, **context.to_dict())
         logger.debug("HTML gerado com sucesso (%d caracteres)", len(html_content))

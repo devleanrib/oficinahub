@@ -1,0 +1,167 @@
+{% extends "web/base.html" %}
+{% load humanize %}
+{% block title %}Diagnostico #{{ diagnosis.id }} - Detalhes{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h1><i class="bi bi-clipboard-check"></i> Diagnostico #{{ diagnosis.id }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'gerar_pdf' diagnosis.id %}" class="btn btn-success">
+            <i class="bi bi-download"></i> Baixar PDF
+        </a>
+        <button type="button" class="btn btn-outline-primary" onclick="compartilharDetalhes()">
+            <i class="bi bi-share"></i> Compartilhar
+        </button>
+        <a href="{% url 'historico' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-car-front"></i> Dados do Veiculo</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Marca</small>
+                        <strong>{{ diagnosis.vehicle_brand|default:"-" }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Modelo</small>
+                        <strong>{{ diagnosis.vehicle_model|default:"-" }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Ano</small>
+                        <strong>{{ diagnosis.vehicle_year|default:"-" }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Motor</small>
+                        <strong>{{ diagnosis.vehicle_engine|default:"-" }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Combustivel</small>
+                        <strong>{{ diagnosis.vehicle_fuel|default:"-" }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Transmissao</small>
+                        <strong>{{ diagnosis.vehicle_transmission|default:"-" }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Quilometragem</small>
+                        <strong>{% if diagnosis.vehicle_mileage %}{{ diagnosis.vehicle_mileage|intcomma }} km{% else %}-{% endif %}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Placa</small>
+                        <strong>{{ diagnosis.vehicle_plate|default:"-" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-clipboard-data"></i> Resumo</div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <div class="border rounded p-3">
+                            <div class="fs-3 fw-bold">{{ diagnosis.total_codes }}</div>
+                            <small class="text-muted">Falhas</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3">
+                            <span class="severity-badge sev-{{ diagnosis.overall_severity|lower }} fs-5">{{ diagnosis.overall_severity }}</span>
+                            <div class="mt-1"><small class="text-muted">Criticidade</small></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mb-0">{{ diagnosis.summary }}</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-exclamation-triangle"></i> Diagnosticos</div>
+            <div class="card-body p-0">
+                {% for result in diagnosis.results %}
+                <div class="border-bottom p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="badge bg-dark fs-6 me-2">{{ result.code }}</span>
+                            <strong>{{ result.meaning }}</strong>
+                        </div>
+                        <div>
+                            <span class="severity-badge sev-{{ result.severity|lower }}">{{ result.severity }}</span>
+                            {% if result.can_operate %}
+                            <span class="badge bg-success ms-1">Pode trafegar</span>
+                            {% else %}
+                            <span class="badge bg-danger ms-1">Nao pode trafegar</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">{{ result.description }}</p>
+                    {% if result.causes %}
+                    <div class="mb-2">
+                        <strong class="small text-danger"><i class="bi bi-exclamation-circle"></i> Causas Provaveis</strong>
+                        <ul class="mb-0 mt-1">{% for c in result.causes %}<li>{{ c }}</li>{% endfor %}</ul>
+                    </div>
+                    {% endif %}
+                    {% if result.risks %}
+                    <div class="mb-2">
+                        <strong class="small text-warning"><i class="bi bi-shield-exclamation"></i> Riscos</strong>
+                        <ul class="mb-0 mt-1">{% for r in result.risks %}<li>{{ r }}</li>{% endfor %}</ul>
+                    </div>
+                    {% endif %}
+                    {% if result.recommendations %}
+                    <div>
+                        <strong class="small text-success"><i class="bi bi-check2-circle"></i> Recomendacoes</strong>
+                        <ul class="mb-0 mt-1">{% for rec in result.recommendations %}<li>{{ rec }}</li>{% endfor %}</ul>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="bi bi-chat-left-text"></i> Conclusao</div>
+            <div class="card-body">
+                <p class="mb-0">{{ diagnosis.conclusion }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-info-circle"></i> Informacoes</div>
+            <div class="card-body">
+                <p class="mb-2"><strong>Data:</strong> {{ diagnosis.created_at|date:"d/m/Y H:i" }}</p>
+                <p class="mb-2"><strong>ID:</strong> #{{ diagnosis.id }}</p>
+                <p class="mb-0"><strong>Codigos:</strong> {{ diagnosis.total_codes }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function compartilharDetalhes() {
+    var url = window.location.origin + "{% url 'gerar_pdf' diagnosis.id %}";
+    var titulo = "Laudo Diagnostico - {{ diagnosis.vehicle_brand }} {{ diagnosis.vehicle_model }}";
+
+    if (navigator.share) {
+        navigator.share({ title: titulo, url: url });
+    } else {
+        var tempInput = document.createElement("input");
+        tempInput.value = url;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        alert("Link copiado para a area de transferencia!");
+    }
+}
+</script>
+{% endblock %}
