@@ -1,0 +1,5 @@
+[phases.setup]
+nixPkgs = ["cairo", "pango", "glib", "libffi", "pkg-config"]
+
+[phases.build]
+cmds = ["pip install -r requirements.txt"]
