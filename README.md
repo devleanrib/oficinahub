@@ -274,6 +274,53 @@ O laudo profissional inclui:
 - **Codigos invalidos**: Validacao de formato
 - **Respostas malformadas**: Validacao de JSON
 
+## Deploy Online (Railway)
+
+O sistema pode ser hospedado gratuitamente no Railway.
+
+### Passo a passo:
+
+1. Faca push do codigo para o GitHub:
+```bash
+git add .
+git commit -m "Deploy config"
+git push
+```
+
+2. Acesse [railway.app](https://railway.app) e faca login com GitHub
+
+3. Clique em "New Project" > "Deploy from GitHub repo"
+
+4. Selecione o repositorio
+
+5. Adicione as variaveis de ambiente (tab "Variables"):
+```
+DJANGO_SECRET_KEY=uma-chave-secreta-forte
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=seu-app.up.railway.app
+OPENAI_API_KEY=sua-chave-api
+BASE_URL=https://integrate.api.nvidia.com/v1
+OPENAI_MODEL=minimaxai/minimax-m2.7
+```
+
+6. O Railway vai automaticamente:
+   - Instalar as dependencias
+   - Rodar migrations
+   - Coletar arquivos estaticos
+   - Iniciar o servidor
+
+7. Acesse o URL fornecido pelo Railway (ex: `seu-app.up.railway.app`)
+
+### Deploy alternativo (Render):
+
+1. Acesse [render.com](https://render.com)
+2. "New" > "Web Service"
+3. Conecte o repositorio GitHub
+4. Configure:
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `python manage.py migrate && python manage.py collectstatic --noinput && gunicorn core.wsgi:application`
+5. Adicione as variaveis de ambiente iguais ao Railway
+
 ## Licenca
 
 Projeto para fins educacionais e de demonstracao.
