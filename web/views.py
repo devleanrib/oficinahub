@@ -28,6 +28,11 @@ def nova_analise(request):
         step = request.POST.get("step", "1")
 
         if step == "1":
+            request.session["client"] = {
+                "client_name": request.POST.get("client_name", "").strip(),
+                "client_document": request.POST.get("client_document", "").strip(),
+                "client_phone": request.POST.get("client_phone", "").strip(),
+            }
             request.session["vehicle"] = {
                 "brand": request.POST.get("brand", "").strip(),
                 "model": request.POST.get("model", "").strip(),
@@ -38,19 +43,28 @@ def nova_analise(request):
                 "mileage": request.POST.get("mileage", "").strip(),
                 "plate": request.POST.get("plate", "").strip(),
             }
-            return render(request, "web/analise.html", {"step": "2", "vehicle": request.session["vehicle"]})
+            return render(request, "web/analise.html", {
+                "step": "2",
+                "vehicle": request.session["vehicle"],
+                "client": request.session["client"],
+            })
 
         if step == "2":
             codes_raw = request.POST.get("codes", "").strip()
             if not codes_raw:
                 messages.error(request, "Informe pelo menos um codigo OBD-II.")
-                return render(request, "web/analise.html", {"step": "2", "vehicle": request.session.get("vehicle", {})})
+                return render(request, "web/analise.html", {
+                    "step": "2",
+                    "vehicle": request.session.get("vehicle", {}),
+                    "client": request.session.get("client", {}),
+                })
 
             codes = [c.strip().upper() for c in codes_raw.split(",") if c.strip()]
             request.session["codes"] = codes
             return render(request, "web/analise.html", {
                 "step": "3",
                 "vehicle": request.session.get("vehicle", {}),
+                "client": request.session.get("client", {}),
                 "codes": codes,
             })
 
@@ -62,6 +76,7 @@ def nova_analise(request):
 
 def _execute_diagnosis(request):
     vehicle_data = request.session.get("vehicle", {})
+    client_data = request.session.get("client", {})
     codes = request.session.get("codes", [])
 
     if not codes:
@@ -94,6 +109,9 @@ def _execute_diagnosis(request):
             shop_phone=shop.phone if shop else "",
             mechanic_name=shop.mechanic_name if shop else "",
             mechanic_credential=shop.mechanic_credential if shop else "",
+            client_name=client_data.get("client_name", ""),
+            client_document=client_data.get("client_document", ""),
+            client_phone=client_data.get("client_phone", ""),
         )
         reporter = ReportGenerator(metadata)
         context_report = reporter.prepare_context(report, vehicle)
@@ -101,6 +119,9 @@ def _execute_diagnosis(request):
         results = pdf_gen.generate(context_report, save_html=True, save_pdf=True)
 
         diagnosis = Diagnosis.objects.create(
+            client_name=client_data.get("client_name", ""),
+            client_document=client_data.get("client_document", ""),
+            client_phone=client_data.get("client_phone", ""),
             vehicle_brand=vehicle.brand,
             vehicle_model=vehicle.model,
             vehicle_year=vehicle.year,

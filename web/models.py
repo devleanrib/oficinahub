@@ -32,6 +32,9 @@ class Diagnosis(models.Model):
     ]
 
     created_at = models.DateTimeField(auto_now_add=True)
+    client_name = models.CharField("Nome do Cliente", max_length=200, blank=True, default="")
+    client_document = models.CharField("CPF/CNPJ", max_length=20, blank=True, default="")
+    client_phone = models.CharField("Telefone do Cliente", max_length=20, blank=True, default="")
     vehicle_brand = models.CharField("Marca", max_length=100, blank=True, default="")
     vehicle_model = models.CharField("Modelo", max_length=100, blank=True, default="")
     vehicle_year = models.CharField("Ano", max_length=10, blank=True, default="")

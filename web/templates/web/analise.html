@@ -18,11 +18,29 @@
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card">
-            <div class="card-header"><i class="bi bi-car-front"></i> Etapa 1: Dados do Veiculo</div>
+            <div class="card-header"><i class="bi bi-car-front"></i> Etapa 1: Dados do Cliente e Veiculo</div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
                     <input type="hidden" name="step" value="1">
+
+                    <h6 class="text-muted mb-3"><i class="bi bi-person"></i> Dados do Cliente</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-5">
+                            <label class="form-label">Nome do Cliente</label>
+                            <input type="text" class="form-control" name="client_name" placeholder="Ex: Joao da Silva" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">CPF / CNPJ</label>
+                            <input type="text" class="form-control" name="client_document" placeholder="000.000.000-00" maxlength="18">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Telefone</label>
+                            <input type="text" class="form-control" name="client_phone" placeholder="(92) 99999-0000" maxlength="20">
+                        </div>
+                    </div>
+
+                    <h6 class="text-muted mb-3"><i class="bi bi-car-front"></i> Dados do Veiculo</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Marca</label>
@@ -91,6 +109,11 @@
             <div class="card-body">
                 {% if vehicle %}
                 <div class="alert alert-light border mb-4">
+                    <strong><i class="bi bi-person"></i> Cliente:</strong>
+                    {{ client.client_name }}
+                    {% if client.client_document %} | {{ client.client_document }}{% endif %}
+                    {% if client.client_phone %} | {{ client.client_phone }}{% endif %}
+                    <br>
                     <strong><i class="bi bi-car-front"></i> Veiculo:</strong>
                     {{ vehicle.brand }} {{ vehicle.model }} - {{ vehicle.year }} ({{ vehicle.engine }})
                 </div>
@@ -127,13 +150,19 @@
             <div class="card-header"><i class="bi bi-check-circle"></i> Etapa 3: Confirmar Analise</div>
             <div class="card-body">
                 <div class="row g-3 mb-4">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <h6 class="text-muted"><i class="bi bi-person"></i> Cliente</h6>
+                        <p class="fw-bold mb-0">{{ client.client_name }}</p>
+                        {% if client.client_document %}<p class="text-muted mb-0">{{ client.client_document }}</p>{% endif %}
+                        {% if client.client_phone %}<p class="text-muted mb-0">{{ client.client_phone }}</p>{% endif %}
+                    </div>
+                    <div class="col-md-4">
                         <h6 class="text-muted"><i class="bi bi-car-front"></i> Veiculo</h6>
                         <p class="fw-bold mb-0">{{ vehicle.brand }} {{ vehicle.model }}</p>
                         <p class="text-muted mb-0">{{ vehicle.year }} - {{ vehicle.engine }}</p>
                         {% if vehicle.plate %}<p class="text-muted mb-0">Placa: {{ vehicle.plate }}</p>{% endif %}
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <h6 class="text-muted"><i class="bi bi-tag"></i> Codigos ({{ codes|length }})</h6>
                         {% for code in codes %}
                         <span class="badge bg-dark me-1 mb-1">{{ code }}</span>
