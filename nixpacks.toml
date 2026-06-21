@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["cairo", "pango", "glib", "libffi", "pkg-config"]
+nixPkgs = ["cairo", "pango", "glib", "libffi", "pkg-config", "gdk-pixbuf", "fontconfig", "librsvg"]
 
 [phases.build]
 cmds = ["pip install -r requirements.txt"]

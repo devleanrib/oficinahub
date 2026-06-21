@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: gerenciador
+    runtime: docker
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: BASE_URL
+        value: https://integrate.api.nvidia.com/v1
+      - key: OPENAI_MODEL
+        value: minimaxai/minimax-m2.7
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "*"
+      - key: PYTHON_VERSION
+        value: "3.11.9"
