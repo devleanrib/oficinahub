@@ -1,326 +1,175 @@
-# Sistema de Diagnostico Automotivo OBD-II
+Sistema de Diagnóstico Automotivo OBD-II
 
-Sistema completo de diagnostico automotivo que recebe codigos de falha OBD-II e informacoes do veiculo, consulta um modelo de IA para gerar analises tecnicas e produz laudos profissionais em HTML e PDF.
+Sistema web desenvolvido em Python + Django para auxiliar oficinas mecânicas na interpretação de códigos de falha OBD-II utilizando modelos de IA.
 
-## Visao Geral
+O usuário informa os dados do veículo e os códigos de falha, e o sistema gera um diagnóstico técnico detalhado, além de um laudo profissional em HTML e PDF.
 
-O sistema permite:
-- Receber codigos de falha OBD-II e informacoes do veiculo via web, CLI interativo, argumentos ou arquivos
-- Consultar IA para gerar diagnosticos tecnicos completos com contexto do veiculo
-- Produzir laudos profissionais em HTML e PDF
-- Layout profissional para clientes de oficina
-- Validar e normalizar codigos de entrada
-- Tratar erros de API com retry automatico
-- Interface web responsiva com Bootstrap 5
-- Historico de diagnosticos persistidos
-
-## Arquitetura
-
-```
+Principais funcionalidades
+Diagnóstico de códigos OBD-II com apoio de IA
+Interface web desenvolvida em Django
+Histórico de diagnósticos
+Geração de relatórios em HTML e PDF
+Personalização dos laudos com os dados da oficina
+Validação automática dos códigos informados
+Suporte para execução via navegador ou linha de comando (CLI)
+Tecnologias utilizadas
+Python 3.11+
+Django
+Bootstrap 5
+SQLite
+ReportLab
+Jinja2
+API compatível com OpenAI (OpenAI, NVIDIA NIM, Groq, Together AI, Ollama)
+Estrutura do projeto
 gerenciador/
-│
-├── main.py                 # Ponto de entrada CLI
-├── ai_client.py            # Cliente para comunicacao com IA
-├── diagnostic_service.py   # Servico de diagnostico
-├── report_generator.py     # Preparacao de dados do relatorio
-├── pdf_generator.py        # Geracao de HTML e PDF
-├── models.py               # Modelos de dados (dataclasses)
-├── prompts.py              # Prompts centralizados
-├── config.py               # Configuracoes do sistema
-├── requirements.txt        # Dependencias
-├── manage.py               # Django manage.py
-├── db.sqlite3              # Banco de dados SQLite
-│
-├── core/                   # Configuracao Django
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-│
-├── web/                    # App Django (Interface Web)
-│   ├── models.py           # Models Django (Diagnosis, ShopSettings)
-│   ├── views.py            # Views Django
-│   ├── urls.py             # URLs da web
-│   ├── context_processors.py
-│   ├── templates/web/      # Templates Django + Bootstrap 5
-│   └── static/web/         # CSS/JS customizados
-│
-├── assets/                 # Imagens da oficina
-│   └── logo.png            # Logo automatica (png/jpg/jpeg/webp)
-│
-├── templates/              # Templates Jinja2 (PDF)
-│   ├── base.html
-│   └── client_report.html
-│
-├── static/                 # Arquivos estaticos (PDF)
-│   └── style.css
-│
-├── input/                  # Arquivos de entrada
-│   └── example.json
-│
-└── output/                 # Laudos gerados
-    ├── laudo_*.html
-    └── laudo_*.pdf
-```
 
-## Pre-requisitos
+├── main.py
+├── manage.py
+├── ai_client.py
+├── diagnostic_service.py
+├── report_generator.py
+├── pdf_generator.py
+├── config.py
+│
+├── core/
+├── web/
+├── templates/
+├── static/
+├── assets/
+├── input/
+└── output/
+Instalação
 
-- Python 3.11+
-- API Key de provedor de IA (OpenAI, NVIDIA, Groq, etc.)
+Clone o projeto:
 
-## Instalacao
+git clone <repositorio>
 
-1. Acesse o diretorio do projeto:
-```bash
 cd gerenciador
-```
 
-2. Crie um ambiente virtual (recomendado):
-```bash
+Crie um ambiente virtual:
+
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# ou
-venv\Scripts\activate  # Windows
-```
 
-3. Instale as dependencias:
-```bash
+Windows
+
+venv\Scripts\activate
+
+Linux/Mac
+
+source venv/bin/activate
+
+Instale as dependências:
+
 pip install -r requirements.txt
-```
 
-4. Execute as migrations do banco:
-```bash
+Execute as migrations:
+
 python manage.py migrate
-```
+Configuração
 
-## Configuracao
+Crie um arquivo .env na raiz do projeto.
 
-1. Crie um arquivo `.env` na raiz do projeto:
-```env
-# URL base do provedor de IA
 BASE_URL=https://integrate.api.nvidia.com/v1
 
-# Chave da API
-OPENAI_API_KEY=sua-chave-aqui
+OPENAI_API_KEY=sua_api_key
 
-# Modelo a ser utilizado
 OPENAI_MODEL=meta/llama-3.1-70b-instruct
-```
 
-2. Ou defina as variaveis de ambiente:
-```bash
-export BASE_URL="https://integrate.api.nvidia.com/v1"
-export OPENAI_API_KEY="sua-chave-aqui"
-```
+Também é possível utilizar outros provedores compatíveis com a API OpenAI, como:
 
-### Configuracoes Disponiveis
+OpenAI
+NVIDIA NIM
+Groq
+Together AI
+Ollama
+Executando o sistema
 
-| Variavel | Padrao | Descricao |
-|----------|--------|-----------|
-| `BASE_URL` | `https://api.openai.com/v1` | URL base do provedor de IA |
-| `OPENAI_API_KEY` | (obrigatorio) | Chave da API do provedor |
-| `OPENAI_MODEL` | `gpt-4` | Modelo a ser utilizado |
-| `OPENAI_TEMPERATURE` | `0.1` | Temperatura (0.0-1.0) |
-| `OPENAI_MAX_TOKENS` | `3000` | Limite de tokens |
-| `OPENAI_TIMEOUT` | `60` | Timeout em segundos |
-| `MAX_RETRIES` | `3` | Tentativas maximas |
-| `LOG_LEVEL` | `DEBUG` | Nivel de logging |
+Inicie o servidor Django:
 
-### Provedores Suportados
-
-- **OpenAI**: `https://api.openai.com/v1`
-- **NVIDIA NIM**: `https://integrate.api.nvidia.com/v1`
-- **Groq**: `https://api.groq.com/openai/v1`
-- **Together AI**: `https://api.together.xyz/v1`
-- **Local (Ollama)**: `http://localhost:11434/v1`
-
-## Interface Web (Recomendada)
-
-A interface web e a principal forma de utilizacao do sistema. Ela oferece um fluxo guiado passo a passo.
-
-### Iniciar o Servidor
-
-```bash
 python manage.py runserver
-```
 
-Acesse no navegador: `http://127.0.0.1:8000`
+Depois acesse:
 
-### Paginas Disponiveis
+http://127.0.0.1:8000
+Fluxo de utilização
+Informe os dados do veículo.
+Digite os códigos OBD-II.
+Aguarde o processamento da IA.
+Visualize o diagnóstico.
+Gere o relatório em PDF.
+Interface
 
-| URL | Descricao |
-|-----|-----------|
-| `/` | Dashboard com estatisticas e acesso rapido |
-| `/analise/` | Wizard de 3 etapas para novo diagnostico |
-| `/historico/` | Lista de todos os diagnosticos realizados |
-| `/configuracoes/` | Dados da oficina e configuracoes |
+O sistema possui quatro áreas principais:
 
-### Fluxo da Analise
+Dashboard
+Nova análise
+Histórico de diagnósticos
+Configurações da oficina
 
-**Etapa 1 - Dados do Veiculo:**
-- Preencha marca, modelo, ano, motorizacao, combustivel
-- Campos opcionais: transmissao, quilometragem, placa
-- Clique em "Proximo"
+Nas configurações é possível definir:
 
-**Etapa 2 - Codigos OBD-II:**
-- Digite os codigos separados por virgula
-- Exemplo: `P0300,P0171,U0100`
-- Clique em "Analisar"
+nome da oficina;
+endereço;
+telefone;
+mecânico responsável;
+logotipo utilizado nos relatórios.
+Logo da oficina
 
-**Etapa 3 - Confirmacao:**
-- Revise os dados do veiculo e codigos
-- Clique em "Confirmar e Analisar"
-- Aguarde o processamento da IA
+Para utilizar uma logo personalizada, basta colocar um arquivo chamado logo na pasta:
 
-**Resultado:**
-- Resumo executivo com criticidade geral
-- Lista detalhada de cada diagnostico
-- Causas, riscos e recomendacoes por codigo
-- Botao para gerar PDF do relatorio
-
-### Configuracoes da Oficina
-
-Acesse `/configuracoes/` para configurar:
-- Nome da oficina
-- Endereco e telefone
-- Mecanico responsavel e credencial
-- Logo (detectada automaticamente de `assets/`)
-
-Essas informacoes sao utilizadas automaticamente nos relatorios PDF.
-
-## Modo CLI
-
-O sistema tambem pode ser utilizado via linha de comando:
-
-### Modo Interativo
-```bash
-python main.py
-```
-
-### Modo CLI com Codigos
-```bash
-python main.py --codes "P0300,P0171,U0100"
-```
-
-### Modo CLI com Arquivo
-```bash
-python main.py --file input/example.json
-```
-
-### Gerar Apenas HTML
-```bash
-python main.py --codes "P0300" --html-only
-```
-
-## Logo da Oficina
-
-O sistema detecta automaticamente a logo da oficina para inserir no cabecalho do laudo.
-
-Para adicionar sua logo, coloque um arquivo chamado `logo` na pasta `assets/`:
-
-```
 assets/
-├── logo.png      (prioridade 1)
-├── logo.jpg      (prioridade 2)
-├── logo.jpeg     (prioridade 3)
-└── logo.webp     (prioridade 4)
-```
 
-O sistema procura os arquivos nesta ordem e utiliza o primeiro encontrado. Se nenhum arquivo existir, o relatorio e gerado normalmente sem a logo.
+logo.png
+logo.jpg
+logo.jpeg
+logo.webp
 
-**Para trocar a logo:** basta substituir o arquivo na pasta `assets/`. Nenhuma alteracao no codigo e necessaria.
+O sistema procura automaticamente pelos formatos acima.
 
-## Estrutura do Laudo
+Utilização via CLI
 
-O laudo profissional inclui:
+Também é possível executar o sistema pelo terminal.
 
-1. **Cabecalho** - Logo e dados da oficina
-2. **Dados do Cliente** - Nome, documento, telefone
-3. **Dados do Veiculo** - Marca, modelo, ano, motorizacao, combustivel, transmissao, quilometragem, placa
-4. **Resumo Executivo** - Quantidade de falhas e criticidade
-5. **Diagnosticos** - Cada codigo com causas, riscos e recomendacoes
-6. **Conclusao** - Orientacao ao cliente
-7. **Assinaturas** - Espaco para mecanico e cliente
+Diagnóstico simples:
 
-## Estrutura de Codigos OBD-II
+python main.py --codes "P0300,P0171"
 
-- **P** (Powertrain): Motor, transmissao, emissoes (ex: P0300)
-- **C** (Chassis): ABS, suspensao, direcao, freios (ex: C0035)
-- **B** (Body): Airbag, cintos, carroceria (ex: B0020)
-- **U** (Network): Comunicacao entre modulos (ex: U0100)
+Usando um arquivo JSON:
 
-## Estrutura do Codigo
+python main.py --file input/example.json
 
-| Arquivo | Responsabilidade |
-|---------|------------------|
-| `config.py` | Configuracoes do sistema |
-| `models.py` | Modelos de dados (dataclasses) |
-| `prompts.py` | Prompts da IA |
-| `ai_client.py` | Comunicacao com IA |
-| `diagnostic_service.py` | Orquestracao do diagnostico |
-| `report_generator.py` | Preparacao de dados |
-| `pdf_generator.py` | Geracao de HTML e PDF |
-| `core/settings.py` | Configuracoes Django |
-| `web/models.py` | Models Django (Diagnosis, ShopSettings) |
-| `web/views.py` | Views Django (dashboard, analise, resultado, historico, configuracoes) |
-| `web/urls.py` | Roteamento URL |
-| `web/templates/` | Templates Django + Bootstrap 5 |
-| `main.py` | Interface CLI |
+Gerando apenas HTML:
 
-## Tratamento de Erros
+python main.py --codes "P0300" --html-only
+Estrutura dos laudos
 
-- **Rate Limit**: Retry com backoff exponencial
-- **Timeout**: Retry automatico
-- **Autenticacao**: Mensagem clara sobre API Key
-- **Codigos invalidos**: Validacao de formato
-- **Respostas malformadas**: Validacao de JSON
+Cada relatório contém:
 
-## Deploy Online (Railway)
+informações da oficina;
+dados do cliente;
+dados do veículo;
+resumo executivo;
+diagnóstico detalhado de cada código;
+recomendações técnicas;
+espaço para assinaturas.
+Tratamento de erros
 
-O sistema pode ser hospedado gratuitamente no Railway.
+O sistema possui tratamento para situações comuns como:
 
-### Passo a passo:
+códigos inválidos;
+timeout da API;
+limite de requisições (retry automático);
+falhas de autenticação;
+respostas inválidas do modelo de IA.
+Deploy
 
-1. Faca push do codigo para o GitHub:
-```bash
-git add .
-git commit -m "Deploy config"
-git push
-```
+O projeto pode ser publicado em plataformas como:
 
-2. Acesse [railway.app](https://railway.app) e faca login com GitHub
+Railway
+Render
 
-3. Clique em "New Project" > "Deploy from GitHub repo"
+Basta configurar as variáveis de ambiente e executar as migrations durante o deploy.
 
-4. Selecione o repositorio
+Licença
 
-5. Adicione as variaveis de ambiente (tab "Variables"):
-```
-DJANGO_SECRET_KEY=uma-chave-secreta-forte
-DJANGO_DEBUG=False
-DJANGO_ALLOWED_HOSTS=seu-app.up.railway.app
-OPENAI_API_KEY=sua-chave-api
-BASE_URL=https://integrate.api.nvidia.com/v1
-OPENAI_MODEL=minimaxai/minimax-m2.7
-```
-
-6. O Railway vai automaticamente:
-   - Instalar as dependencias
-   - Rodar migrations
-   - Coletar arquivos estaticos
-   - Iniciar o servidor
-
-7. Acesse o URL fornecido pelo Railway (ex: `seu-app.up.railway.app`)
-
-### Deploy alternativo (Render):
-
-1. Acesse [render.com](https://render.com)
-2. "New" > "Web Service"
-3. Conecte o repositorio GitHub
-4. Configure:
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `python manage.py migrate && python manage.py collectstatic --noinput && gunicorn core.wsgi:application`
-5. Adicione as variaveis de ambiente iguais ao Railway
-
-## Licenca
-
-Projeto para fins educacionais e de demonstracao.
+Projeto desenvolvido para fins de estudo, demonstração e portfólio.
